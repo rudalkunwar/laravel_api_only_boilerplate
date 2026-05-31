@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-lint-${{ hashFiles('composer.lock') }}
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      - name: Run Pint
+        run: composer test:lint
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [8.4]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pdo_sqlite, json
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-test-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      - name: Setup environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run tests
+        run: composer test:unit

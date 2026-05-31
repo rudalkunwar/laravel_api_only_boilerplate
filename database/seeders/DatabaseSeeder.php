@@ -1,25 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Domain\Auth\Enums\Role;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+final class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call(RolePermissionSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        User::factory()
+            ->create([
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
+            ])
+            ->assignRole(Role::Admin->value);
+
+        User::factory()
+            ->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ])
+            ->assignRole(Role::User->value);
+
+        User::factory(10)
+            ->create()
+            ->each(static fn (User $user): mixed => $user->assignRole(Role::User->value));
     }
 }

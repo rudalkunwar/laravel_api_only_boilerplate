@@ -11,14 +11,17 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - php - 8.4
 - laravel/framework (LARAVEL) - v13
+- laravel/octane (OCTANE) - v2
 - laravel/prompts (PROMPTS) - v0
 - laravel/sanctum (SANCTUM) - v4
+- larastan/larastan (LARASTAN) - v3
 - laravel/boost (BOOST) - v2
 - laravel/mcp (MCP) - v0
 - laravel/pail (PAIL) - v1
 - laravel/pint (PINT) - v1
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
+- rector/rector (RECTOR) - v2
 
 ## Skills Activation
 
@@ -106,6 +109,13 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
 
+=== tests rules ===
+
+# Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
+
 === laravel/core rules ===
 
 # Do Things the Laravel Way
@@ -135,6 +145,24 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 ## Vite Error
 
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
+
+=== octane/core rules ===
+
+# Octane
+
+- Octane boots the application once and reuses it across requests, so singletons persist between requests.
+- The Laravel container's `scoped` method may be used as a safe alternative to `singleton`.
+- Never inject the container, request, or config repository into a singleton's constructor; use a resolver closure or `bind()` instead:
+
+```php
+// Bad
+$this->app->singleton(Service::class, fn (Application $app) => new Service($app['request']));
+
+// Good
+$this->app->singleton(Service::class, fn () => new Service(fn () => request()));
+```
+
+- Never append to static properties, as they accumulate in memory across requests.
 
 === pint/core rules ===
 

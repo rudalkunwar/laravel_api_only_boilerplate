@@ -1,0 +1,72 @@
+services:
+  php:
+    build:
+      context: .
+      target: dev
+    container_name: laravel-api
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ./docker/supervisor.conf:/etc/supervisor/conf.d/supervisor.conf
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - OCTANE_SERVER=swoole
+      - DB_CONNECTION=pgsql
+      - DB_HOST=pgsql
+      - DB_PORT=5432
+      - DB_DATABASE=laravel
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=secret
+      - REDIS_HOST=redis
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisor.conf"]
+
+  nginx:
+    image: nginx:alpine
+    container_name: laravel-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/app
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+
+  pgsql:
+    image: postgres:17-alpine
+    container_name: laravel-pgsql
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: laravel
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U laravel"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: laravel-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgsql_data:
+  redis_data:
