@@ -12,8 +12,21 @@ final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Roles and permissions are required in every environment.
         $this->call(RolePermissionSeeder::class);
 
+        // Demo accounts use a well-known password ("password") and must never
+        // be created on a live system. Use a dedicated admin-provisioning flow
+        // in production instead.
+        if (app()->isProduction()) {
+            return;
+        }
+
+        $this->seedDemoUsers();
+    }
+
+    private function seedDemoUsers(): void
+    {
         User::factory()
             ->create([
                 'name' => 'Admin User',

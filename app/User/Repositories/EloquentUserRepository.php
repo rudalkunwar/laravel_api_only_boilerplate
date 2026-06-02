@@ -12,6 +12,14 @@ use Illuminate\Support\Str;
 
 final class EloquentUserRepository implements UserRepositoryInterface
 {
+    /**
+     * Columns the admin listing may be ordered by. Guarding this here keeps the
+     * repository safe by construction, independent of any caller's validation.
+     *
+     * @var list<string>
+     */
+    private const array SORTABLE_COLUMNS = ['id', 'name', 'email', 'created_at'];
+
     public function findById(int $id): ?User
     {
         return User::query()->find($id);
@@ -78,6 +86,8 @@ final class EloquentUserRepository implements UserRepositoryInterface
         }
 
         $sort = Input::string($criteria, 'sort', 'created_at');
+        $sort = in_array($sort, self::SORTABLE_COLUMNS, true) ? $sort : 'created_at';
+
         $direction = Input::string($criteria, 'direction', 'desc') === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sort, $direction);
 

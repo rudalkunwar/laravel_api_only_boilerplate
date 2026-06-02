@@ -93,11 +93,14 @@ composer install
 cp .env.example .env
 php artisan key:generate
 touch database/database.sqlite
-php artisan migrate --seed   # seeds roles & permissions
-php artisan test             # 110 passing
+php artisan migrate --seed   # roles & permissions (+ demo users in non-prod)
+php artisan test
 ```
 
 Serve it: `php artisan serve` (or `php artisan octane:start`). API docs at `http://localhost:8000/docs/api`.
+
+**Default dev login** (seeded only outside production): `admin@example.com` / `password` (admin) and
+`test@example.com` / `password` (user).
 
 ### With Docker
 
@@ -106,6 +109,23 @@ docker compose up -d
 ```
 
 App available at **http://localhost:8080** (Nginx → PHP, with PostgreSQL).
+
+## 🚢 Production deployment
+
+The repo ships with development defaults. Each app built from it **must** set the following before
+going live — none of this is done for you:
+
+- **`APP_ENV=production` and `APP_DEBUG=false`** — `APP_DEBUG=true` leaks stack traces & secrets.
+- **A real `MAIL_MAILER`** (SMTP/SES) — the example uses `log`, so verification / reset / OTP mail
+  never actually leaves the server otherwise.
+- **Run a queue worker** (`php artisan queue:work`) — verification and OTP notifications are queued,
+  so without a worker they never send. The Docker image already runs one via Supervisor.
+- **Fill the real secrets** in `.env`: `STRIPE_*`, `GOOGLE_*` / `APPLE_*`, and lock
+  `CORS_ALLOWED_ORIGINS` (or `FRONTEND_URL`) to your real domain — never `*`.
+- **Deploy steps**: `php artisan migrate --force`, then `config:cache` + `route:cache`.
+
+Demo accounts are **never** seeded when `APP_ENV=production`; provision your first admin through a
+dedicated flow instead.
 
 ## 📡 API reference
 

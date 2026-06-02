@@ -62,3 +62,15 @@ it('paginates users', function (): void {
         ->and($paginator->perPage())->toBe(2)
         ->and($paginator->total())->toBe(3);
 });
+
+it('ignores an unknown sort column to stay injection-safe', function (): void {
+    User::factory()->count(3)->create();
+
+    $paginator = $this->repository->paginateWithCriteria(
+        ['sort' => 'id) FROM users; DROP TABLE users; --'],
+        15,
+    );
+
+    // Falls back to the default ordering instead of injecting the raw column.
+    expect($paginator->total())->toBe(3);
+});
