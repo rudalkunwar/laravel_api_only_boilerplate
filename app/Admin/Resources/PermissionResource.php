@@ -6,10 +6,10 @@ namespace App\Admin\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
-/** @mixin Role */
-final class RoleResource extends JsonResource
+/** @mixin Permission */
+final class PermissionResource extends JsonResource
 {
     /**
      * @return array<string, mixed>
@@ -20,7 +20,6 @@ final class RoleResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'guard_name' => $this->guard_name,
-            'permissions' => $this->permissions->pluck('name')->values()->all(),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
