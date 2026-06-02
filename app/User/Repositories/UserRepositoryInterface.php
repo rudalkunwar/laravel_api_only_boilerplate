@@ -43,4 +43,8 @@ interface UserRepositoryInterface
     public function syncRoles(User $user, string|array $roles): User;
 
     public function resetPassword(User $user, string $hashedPassword): User;
+
+    public function markEmailAsVerified(User $user): User;
+
+    public function createToken(User $user, string $name): string;
 }

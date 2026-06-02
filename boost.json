@@ -11,7 +11,9 @@
     "nightwatch": false,
     "sail": false,
     "skills": [
+        "cashier-stripe-development",
         "laravel-best-practices",
+        "socialite-development",
         "pest-testing"
     ]
 }

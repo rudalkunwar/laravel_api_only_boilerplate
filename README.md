@@ -24,6 +24,8 @@
 - **Sanctum** token-based API authentication
 - **Spatie RBAC** with admin/user roles, granular permissions
 - **Admin API** — user CRUD (search, filter, sort, paginate), role & permission management
+- **OAuth 2.0** — Google & Apple login via Socialite
+- **Stripe Subscriptions** — plans, checkout, billing portal, cancel/resume via Cashier
 - **Email verification** with signed URLs
 - **Password reset** flow
 - **Health check** endpoint (database + cache)
@@ -31,7 +33,7 @@
 - **API documentation** — auto-generated OpenAPI docs via Scramble at `/docs/api`
 - **Consistent JSON responses** — `ApiResponse` envelope for all endpoints
 - **Rate limiting** — per-user and per-IP throttling
-- **Pest** tests with 80+ passing tests
+- **Pest** tests with 98+ passing tests
 - **PHPStan** (Larastan) at max level
 - **Laravel Pint** for code style
 - **Rector** for automated upgrades
@@ -83,6 +85,27 @@ All endpoints are prefixed with `/api/v1`. API docs are available at `/docs/api`
 | `GET` | `/email/verify/{id}/{hash}` | Verify email address (signed URL) | — |
 | `POST` | `/email/verification-notification` | Re-send verification email | ✓ |
 
+### OAuth
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `GET` | `/auth/google/redirect` | Get Google OAuth redirect URL | — |
+| `GET` | `/auth/google/callback` | Handle Google OAuth callback | — |
+| `GET` | `/auth/apple/redirect` | Get Apple OAuth redirect URL | — |
+| `GET` | `/auth/apple/callback` | Handle Apple OAuth callback | — |
+
+### Subscriptions
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `GET` | `/subscriptions/plans` | List available plans | — |
+| `GET` | `/subscriptions/current` | Current subscription status | ✓ |
+| `POST` | `/subscriptions/checkout` | Create Stripe Checkout session | ✓ |
+| `POST` | `/subscriptions/portal` | Get Stripe Billing Portal URL | ✓ |
+| `POST` | `/subscriptions/cancel` | Cancel active subscription | ✓ |
+| `POST` | `/subscriptions/resume` | Resume canceled subscription | ✓ |
+| `POST` | `/stripe/webhook` | Stripe webhook handler | — |
+
 ### User Profile
 
 | Method | Endpoint | Description | Auth |
@@ -117,6 +140,8 @@ app/
 ├── Auth/                    # Shared auth (login, register, password, email, roles)
 ├── User/                    # User profile management
 ├── Admin/                   # Admin CRUD (users, roles, permissions)
+├── OAuth/                   # OAuth 2.0 (Google, Apple) via Socialite
+├── Subscription/            # Stripe subscriptions via Cashier
 ├── Health/                  # Health check endpoint
 ├── Http/                    # Base controller, middleware
 ├── Providers/

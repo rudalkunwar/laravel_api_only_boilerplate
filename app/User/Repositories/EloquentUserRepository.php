@@ -99,4 +99,16 @@ final class EloquentUserRepository implements UserRepositoryInterface
 
         return $user->refresh();
     }
+
+    public function markEmailAsVerified(User $user): User
+    {
+        $user->forceFill(['email_verified_at' => now()])->save();
+
+        return $user->refresh();
+    }
+
+    public function createToken(User $user, string $name): string
+    {
+        return $user->createToken($name)->plainTextToken;
+    }
 }

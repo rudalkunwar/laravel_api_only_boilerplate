@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Subscription\Actions;
+
+use App\Subscription\Data\CheckoutData;
+use App\User\Models\User;
+use Laravel\Cashier\Checkout;
+use Laravel\Cashier\SubscriptionBuilder;
+
+final readonly class CreateCheckoutAction
+{
+    public function execute(User $user, CheckoutData $data): Checkout
+    {
+        /** @var SubscriptionBuilder $subscription */
+        $subscription = $user->newSubscription('default', $data->plan);
+
+        if ($data->allowPromotionCodes) {
+            $subscription->allowPromotionCodes();
+        }
+
+        if ($data->coupon !== null) {
+            $subscription->withCoupon($data->coupon);
+        }
+
+        return $subscription->checkout([
+            'success_url' => $data->successUrl ?? config('app.url').'/subscription/success',
+            'cancel_url' => $data->cancelUrl ?? config('app.url').'/subscription/cancel',
+        ]);
+    }
+}

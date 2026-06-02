@@ -10,13 +10,13 @@ Each domain/feature is a self-contained module under `app/`. Every file for a fe
 
 ```
 app/
-├── Auth/        # Shared auth: login, register, password, email verification, roles/permissions
+├── Auth/          # Shared auth: login, register, password, email verification, roles/permissions
 │   ├── Actions/
 │   ├── Controllers/
 │   ├── Data/
 │   ├── Enums/
 │   └── Requests/
-├── User/        # User-facing features
+├── User/          # User-facing features
 │   ├── Actions/
 │   ├── Controllers/
 │   ├── Data/
@@ -25,12 +25,27 @@ app/
 │   ├── Repositories/
 │   ├── Requests/
 │   └── Resources/
-├── Admin/       # Admin-only features
+├── Admin/         # Admin-only features
 │   ├── Controllers/
+│   ├── Repositories/
 │   ├── Requests/
 │   └── Resources/
-├── YourFeature/ # <-- add new features here, same pattern
-├── Http/        # Shared infrastructure only
+├── OAuth/         # OAuth 2.0 (Google, Apple) via Socialite
+│   ├── Actions/
+│   ├── Controllers/
+│   ├── Data/
+│   ├── Models/
+│   └── Repositories/
+├── Subscription/  # Stripe subscriptions via Cashier
+│   ├── Actions/
+│   ├── Controllers/
+│   ├── Data/
+│   ├── Enums/
+│   ├── Requests/
+│   └── Resources/
+├── Health/        # Health check endpoint
+├── YourFeature/   # <-- add new features here, same pattern
+├── Http/          # Shared infrastructure only
 │   ├── Controllers/  # Base Controller.php
 │   └── Middleware/
 ├── Providers/

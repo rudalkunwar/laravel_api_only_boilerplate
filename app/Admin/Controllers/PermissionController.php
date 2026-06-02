@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Admin\Controllers;
 
-use App\Admin\Repositories\PermissionRepository;
+use App\Admin\Repositories\PermissionRepositoryInterface;
 use App\Http\Controllers\Controller;
 use App\Support\Http\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +13,7 @@ use Spatie\Permission\Models\Permission;
 final class PermissionController extends Controller
 {
     public function __construct(
-        private readonly PermissionRepository $permissions,
+        private readonly PermissionRepositoryInterface $permissions,
     ) {}
 
     public function index(): JsonResponse

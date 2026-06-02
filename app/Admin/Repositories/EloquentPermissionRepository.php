@@ -7,11 +7,9 @@ namespace App\Admin\Repositories;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Permission;
 
-final readonly class PermissionRepository
+final readonly class EloquentPermissionRepository implements PermissionRepositoryInterface
 {
-    /**
-     * @return Collection<int, Permission>
-     */
+    /** @return Collection<int, Permission> */
     public function all(): Collection
     {
         return Permission::query()->get();

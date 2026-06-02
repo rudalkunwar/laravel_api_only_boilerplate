@@ -7,11 +7,9 @@ namespace App\Admin\Repositories;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Role;
 
-final readonly class RoleRepository
+final readonly class EloquentRoleRepository implements RoleRepositoryInterface
 {
-    /**
-     * @return Collection<int, Role>
-     */
+    /** @return Collection<int, Role> */
     public function all(): Collection
     {
         return Role::query()->with('permissions')->get();
@@ -27,9 +25,7 @@ final readonly class RoleRepository
         return Role::findOrCreate($name, $guardName);
     }
 
-    /**
-     * @param  array<string, mixed>  $attributes
-     */
+    /** @param array<string, mixed> $attributes */
     public function update(Role $role, array $attributes): Role
     {
         $role->update($attributes);

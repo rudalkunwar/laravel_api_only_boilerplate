@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Admin\Controllers;
 
-use App\Admin\Repositories\RoleRepository;
+use App\Admin\Repositories\RoleRepositoryInterface;
 use App\Admin\Requests\RoleStoreRequest;
 use App\Admin\Requests\RoleUpdateRequest;
 use App\Http\Controllers\Controller;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 final class RoleController extends Controller
 {
     public function __construct(
-        private readonly RoleRepository $roles,
+        private readonly RoleRepositoryInterface $roles,
     ) {}
 
     public function index(): JsonResponse
