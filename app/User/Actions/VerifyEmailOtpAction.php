@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace App\User\Actions;
 
 use App\User\Models\User;
+use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Validation\ValidationException;
 
 final readonly class VerifyEmailOtpAction
 {
+    public function __construct(
+        private readonly UserRepositoryInterface $users,
+    ) {}
+
     public function execute(User $user, string $email, string $otp): User
     {
         $emailOtp = $user->emailOtps()
@@ -25,11 +30,9 @@ final readonly class VerifyEmailOtpAction
 
         $emailOtp->update(['verified_at' => now()]);
 
-        $user->update([
+        return $this->users->update($user, [
             'email' => $email,
             'email_verified_at' => now(),
         ]);
-
-        return $user->fresh();
     }
 }
