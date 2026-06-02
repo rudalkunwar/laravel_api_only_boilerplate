@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 use App\User\Models\EmailOtp;
 use App\User\Models\User;
+use App\User\Notifications\EmailOtpNotification;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function (): void {
+    Notification::fake();
     $this->user = User::factory()->create(['email' => null, 'email_verified_at' => null]);
     Sanctum::actingAs($this->user);
 });
@@ -23,6 +26,20 @@ it('sends otp for email setup', function (): void {
         'user_id' => $this->user->id,
         'email' => 'new@example.com',
     ]);
+});
+
+it('emails the otp code to the target address', function (): void {
+    $this->postJson('/api/v1/user/email/send-otp', [
+        'email' => 'new@example.com',
+    ])->assertOk();
+
+    $otp = EmailOtp::query()->where('user_id', $this->user->id)->value('otp');
+
+    Notification::assertSentOnDemand(
+        EmailOtpNotification::class,
+        fn (EmailOtpNotification $notification, array $channels, object $notifiable): bool => $notification->otp === $otp
+            && $notifiable->routes['mail'] === 'new@example.com',
+    );
 });
 
 it('requires unique email when sending otp', function (): void {

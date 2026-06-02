@@ -18,6 +18,7 @@ jobs:
         with:
           php-version: 8.4
           tools: composer:v2
+          coverage: none
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
@@ -28,10 +29,10 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
 
-      - name: Run Pint
+      - name: Check code style (Pint)
         run: composer test:lint
 
-  test:
+  quality:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -45,8 +46,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, pdo_sqlite, json
+          extensions: mbstring, pdo_sqlite, json, bcmath
           tools: composer:v2
+          coverage: none
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
@@ -62,5 +64,11 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      - name: Run tests
+      - name: Refactor check (Rector)
+        run: composer test:refactor
+
+      - name: Static analysis (PHPStan)
+        run: composer test:types
+
+      - name: Tests (Pest)
         run: composer test:unit
