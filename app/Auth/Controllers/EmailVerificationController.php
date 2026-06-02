@@ -47,7 +47,10 @@ final class EmailVerificationController extends Controller
     public function resend(Request $request): JsonResponse
     {
         $user = $request->user();
-        assert($user instanceof User);
+
+        if (!$user instanceof User) {
+            throw new HttpException(401, 'Authentication required.');
+        }
 
         if ($user->hasVerifiedEmail()) {
             return ApiResponse::message('Email address already verified.');

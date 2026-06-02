@@ -31,6 +31,13 @@ final class EloquentUserRepository implements UserRepositoryInterface
         return $user->refresh();
     }
 
+    public function resetEmailVerification(User $user): User
+    {
+        $user->forceFill(['email_verified_at' => null])->save();
+
+        return $user->refresh();
+    }
+
     public function delete(User $user): void
     {
         $user->delete();

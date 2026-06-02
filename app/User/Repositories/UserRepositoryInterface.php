@@ -23,6 +23,8 @@ interface UserRepositoryInterface
      */
     public function update(User $user, array $attributes): User;
 
+    public function resetEmailVerification(User $user): User;
+
     public function delete(User $user): void;
 
     /**

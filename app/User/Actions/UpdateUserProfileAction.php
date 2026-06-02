@@ -24,7 +24,7 @@ final readonly class UpdateUserProfileAction
         ]);
 
         if ($emailChanged) {
-            $user->forceFill(['email_verified_at' => null])->save();
+            $user = $this->users->resetEmailVerification($user);
         }
 
         return $user;
