@@ -6,8 +6,9 @@ namespace App\Subscription\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Laravel\Cashier\Subscription;
 
-/** @mixin \Laravel\Cashier\Subscription */
+/** @mixin Subscription */
 final class SubscriptionResource extends JsonResource
 {
     /**

@@ -60,9 +60,7 @@ final class RoleController extends Controller
     {
         $role = $this->roles->findById($id);
 
-        if (!$role instanceof Role) {
-            throw new HttpException(404, 'Role not found.');
-        }
+        throw_unless($role instanceof Role, HttpException::class, 404, 'Role not found.');
 
         $validated = $request->validated();
 
@@ -90,13 +88,9 @@ final class RoleController extends Controller
     {
         $role = $this->roles->findById($id);
 
-        if (!$role instanceof Role) {
-            throw new HttpException(404, 'Role not found.');
-        }
+        throw_unless($role instanceof Role, HttpException::class, 404, 'Role not found.');
 
-        if ($role->name === 'admin') {
-            throw new HttpException(422, 'Cannot delete the admin role.');
-        }
+        throw_if($role->name === 'admin', HttpException::class, 422, 'Cannot delete the admin role.');
 
         $this->roles->delete($role);
 

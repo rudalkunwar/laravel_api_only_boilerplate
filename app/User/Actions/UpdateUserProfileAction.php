@@ -24,7 +24,7 @@ final readonly class UpdateUserProfileAction
         ]);
 
         if ($emailChanged) {
-            $user = $this->users->resetEmailVerification($user);
+            return $this->users->resetEmailVerification($user);
         }
 
         return $user;

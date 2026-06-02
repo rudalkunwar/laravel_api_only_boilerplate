@@ -7,7 +7,9 @@ namespace App\OAuth\Actions;
 use App\Auth\Enums\Role;
 use App\OAuth\Data\SocialAuthResult;
 use App\OAuth\Data\SocialUserData;
+use App\OAuth\Models\SocialAccount;
 use App\OAuth\Repositories\SocialAccountRepositoryInterface;
+use App\User\Models\User;
 use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Str;
 
@@ -22,7 +24,7 @@ final readonly class AuthenticateSocialUserAction
     {
         $socialAccount = $this->socialAccounts->findByProvider($data->provider, $data->providerId);
 
-        if ($socialAccount !== null) {
+        if ($socialAccount instanceof SocialAccount) {
             $user = $socialAccount->user;
 
             if ($data->avatarUrl !== null && $data->avatarUrl !== $socialAccount->avatar_url) {
@@ -31,7 +33,7 @@ final readonly class AuthenticateSocialUserAction
         } else {
             $user = $data->email !== null ? $this->users->findByEmail($data->email) : null;
 
-            if ($user === null) {
+            if (!$user instanceof User) {
                 $user = $this->users->create([
                     'name' => $data->name,
                     'email' => $data->email,

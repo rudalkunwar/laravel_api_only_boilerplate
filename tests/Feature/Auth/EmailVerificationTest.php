@@ -48,7 +48,7 @@ it('rejects a tampered verification hash', function (): void {
 it('rejects an unsigned verification url', function (): void {
     $user = User::factory()->unverified()->create();
 
-    $this->getJson("/api/v1/email/verify/{$user->id}/".sha1($user->getEmailForVerification()))
+    $this->getJson(sprintf('/api/v1/email/verify/%d/', $user->id).sha1($user->getEmailForVerification()))
         ->assertForbidden();
 });
 

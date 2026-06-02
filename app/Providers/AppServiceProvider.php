@@ -83,7 +83,7 @@ final class AppServiceProvider extends ServiceProvider
                 ? urlencode($notifiable->getEmailForPasswordReset())
                 : '';
 
-            return "{$frontendUrl}/reset-password?token={$token}&email={$email}";
+            return sprintf('%s/reset-password?token=%s&email=%s', $frontendUrl, $token, $email);
         });
     }
 }

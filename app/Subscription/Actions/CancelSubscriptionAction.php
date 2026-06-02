@@ -13,7 +13,7 @@ final readonly class CancelSubscriptionAction
     {
         $subscription = $user->subscription($type);
 
-        if ($subscription === null || !$subscription->active()) {
+        if (!$subscription instanceof Subscription || !$subscription->active()) {
             return null;
         }
 

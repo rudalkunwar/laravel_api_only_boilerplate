@@ -6,6 +6,7 @@ namespace App\Auth\Actions;
 
 use App\Auth\Data\AuthTokenData;
 use App\Auth\Data\LoginData;
+use App\User\Models\User;
 use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Hashing\HashManager;
 use Illuminate\Validation\ValidationException;
@@ -24,7 +25,7 @@ final readonly class AuthenticateUserAction
     {
         $user = $this->users->findByEmail($data->email);
 
-        if ($user === null || !$this->hash->check($data->password, $user->password)) {
+        if (!$user instanceof User || !$this->hash->check($data->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => [__('auth.failed')],
             ]);

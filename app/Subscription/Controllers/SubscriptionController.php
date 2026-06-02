@@ -16,6 +16,7 @@ use App\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Laravel\Cashier\Subscription;
 
 final class SubscriptionController extends Controller
 {
@@ -76,7 +77,7 @@ final class SubscriptionController extends Controller
 
         $subscription = $this->cancelSubscription->execute($user);
 
-        if ($subscription === null) {
+        if (!$subscription instanceof Subscription) {
             return ApiResponse::error('No active subscription found.', 404);
         }
 
@@ -93,7 +94,7 @@ final class SubscriptionController extends Controller
 
         $subscription = $this->resumeSubscription->execute($user);
 
-        if ($subscription === null) {
+        if (!$subscription instanceof Subscription) {
             return ApiResponse::error('No subscription on grace period found.', 404);
         }
 

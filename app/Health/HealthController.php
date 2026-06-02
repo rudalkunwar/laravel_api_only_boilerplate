@@ -37,8 +37,8 @@ final class HealthController
             DB::select('SELECT 1');
 
             return ['healthy' => true, 'message' => 'Connected'];
-        } catch (Throwable $e) {
-            return ['healthy' => false, 'message' => $e->getMessage()];
+        } catch (Throwable $throwable) {
+            return ['healthy' => false, 'message' => $throwable->getMessage()];
         }
     }
 
@@ -54,8 +54,8 @@ final class HealthController
             Cache::forget($key);
 
             return ['healthy' => $result === true, 'message' => $result === true ? 'Read/write ok' : 'Write failed'];
-        } catch (Throwable $e) {
-            return ['healthy' => false, 'message' => $e->getMessage()];
+        } catch (Throwable $throwable) {
+            return ['healthy' => false, 'message' => $throwable->getMessage()];
         }
     }
 }

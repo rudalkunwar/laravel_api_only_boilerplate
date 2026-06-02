@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Support\Http;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -78,10 +77,6 @@ final class ApiResponse
 
         if ($data instanceof Arrayable) {
             return $data->toArray();
-        }
-
-        if ($data instanceof Responsable) {
-            return $data;
         }
 
         return $data;

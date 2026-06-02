@@ -23,7 +23,7 @@ it('returns 403 when non-admin accesses user index', function (): void {
 it('lists paginated users for admin', function (): void {
     Sanctum::actingAs($this->admin);
 
-    User::factory(5)->create()->each(fn (User $u) => $u->assignRole(Role::User));
+    User::factory(5)->create()->each(fn (User $u): User => $u->assignRole(Role::User));
 
     $this->getJson('/api/v1/admin/users')
         ->assertOk()

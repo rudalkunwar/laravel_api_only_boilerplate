@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 final readonly class VerifyEmailOtpAction
 {
     public function __construct(
-        private readonly UserRepositoryInterface $users,
+        private UserRepositoryInterface $users,
     ) {}
 
     public function execute(User $user, string $email, string $otp): User

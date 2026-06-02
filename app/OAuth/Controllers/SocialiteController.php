@@ -65,9 +65,7 @@ final class SocialiteController extends Controller
 
     private function validateProvider(string $provider): void
     {
-        if (!in_array($provider, self::SUPPORTED_PROVIDERS, true)) {
-            throw new UnprocessableEntityHttpException('Provider ['.$provider.'] is not supported.');
-        }
+        throw_unless(in_array($provider, self::SUPPORTED_PROVIDERS, true), UnprocessableEntityHttpException::class, 'Provider ['.$provider.'] is not supported.');
     }
 
     /**
@@ -77,9 +75,7 @@ final class SocialiteController extends Controller
     {
         $driver = Socialite::driver($provider);
 
-        if (!$driver instanceof AbstractProvider) {
-            throw new UnprocessableEntityHttpException('Provider ['.$provider.'] does not support stateless authentication.');
-        }
+        throw_unless($driver instanceof AbstractProvider, UnprocessableEntityHttpException::class, 'Provider ['.$provider.'] does not support stateless authentication.');
 
         return $driver;
     }

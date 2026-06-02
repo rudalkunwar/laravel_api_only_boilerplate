@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Auth\Actions;
 
 use App\Auth\Data\ResetPasswordData;
+use App\User\Models\User;
 use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Passwords\PasswordBroker;
@@ -35,7 +36,7 @@ final readonly class ResetUserPasswordAction
                 'token' => $data->token,
             ],
             function (CanResetPassword $user, string $password): void {
-                /** @var \App\User\Models\User $user */
+                /** @var User $user */
                 $this->users->resetPassword($user, $this->hash->make($password));
 
                 $this->events->dispatch(new PasswordReset($user));

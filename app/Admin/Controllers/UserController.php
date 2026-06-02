@@ -36,9 +36,7 @@ final class UserController extends Controller
     {
         $user = $this->users->findById($id);
 
-        if (!$user instanceof User) {
-            throw new HttpException(404, 'User not found.');
-        }
+        throw_unless($user instanceof User, HttpException::class, 404, 'User not found.');
 
         return ApiResponse::success(UserResource::make($user));
     }
@@ -66,9 +64,7 @@ final class UserController extends Controller
     {
         $user = $this->users->findById($id);
 
-        if (!$user instanceof User) {
-            throw new HttpException(404, 'User not found.');
-        }
+        throw_unless($user instanceof User, HttpException::class, 404, 'User not found.');
 
         $data = $request->validated();
 
@@ -99,15 +95,11 @@ final class UserController extends Controller
 
     public function destroy(int $id): JsonResponse
     {
-        if ((int) $id === (int) auth()->id()) {
-            throw new HttpException(422, 'Cannot delete your own account.');
-        }
+        throw_if($id === (int) auth()->id(), HttpException::class, 422, 'Cannot delete your own account.');
 
         $user = $this->users->findById($id);
 
-        if (!$user instanceof User) {
-            throw new HttpException(404, 'User not found.');
-        }
+        throw_unless($user instanceof User, HttpException::class, 404, 'User not found.');
 
         $this->users->delete($user);
 

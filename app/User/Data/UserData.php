@@ -29,7 +29,7 @@ final readonly class UserData
             name: $user->name,
             email: $user->email,
             isVerified: $user->hasVerifiedEmail(),
-            roles: array_values(array_filter($user->getRoleNames()->all(), 'is_string')),
+            roles: array_values(array_filter($user->getRoleNames()->all(), is_string(...))),
         );
     }
 

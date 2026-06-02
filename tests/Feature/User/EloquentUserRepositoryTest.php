@@ -3,16 +3,17 @@
 declare(strict_types=1);
 
 use App\User\Models\User;
+use App\User\Repositories\EloquentUserRepository;
 use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 
 beforeEach(function (): void {
-    $this->repository = app(UserRepositoryInterface::class);
+    $this->repository = resolve(UserRepositoryInterface::class);
 });
 
 it('resolves the eloquent implementation from the container', function (): void {
-    expect($this->repository)->toBeInstanceOf(App\User\Repositories\EloquentUserRepository::class);
+    expect($this->repository)->toBeInstanceOf(EloquentUserRepository::class);
 });
 
 it('creates a user and hashes the password', function (): void {

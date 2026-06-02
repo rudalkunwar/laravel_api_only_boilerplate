@@ -66,8 +66,8 @@ final class EloquentUserRepository implements UserRepositoryInterface
 
         if ($search !== null) {
             $query->where(function (Builder $q) use ($search): void {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                $q->where('name', 'like', sprintf('%%%s%%', $search))
+                    ->orWhere('email', 'like', sprintf('%%%s%%', $search));
             });
         }
 

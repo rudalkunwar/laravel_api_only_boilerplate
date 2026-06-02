@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+
 arch('the whole application uses strict types')
     ->expect('App')
     ->toUseStrictTypes();
@@ -19,12 +22,12 @@ arch('actions are final and invoked through an execute method')
 arch('controllers extend the base controller')
     ->expect('App\Auth\Controllers')
     ->and('App\User\Controllers')
-    ->toExtend('App\Http\Controllers\Controller');
+    ->toExtend(Controller::class);
 
 arch('controllers do not depend on eloquent models directly for queries')
     ->expect('App\Auth\Controllers')
     ->and('App\User\Controllers')
-    ->not->toUse('Illuminate\Support\Facades\DB');
+    ->not->toUse(DB::class);
 
 arch('data transfer objects are immutable')
     ->expect('App\Auth\Data')

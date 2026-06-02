@@ -8,13 +8,11 @@ use App\Subscription\Data\CheckoutData;
 use App\User\Models\User;
 use Illuminate\Support\Facades\Config;
 use Laravel\Cashier\Checkout;
-use Laravel\Cashier\SubscriptionBuilder;
 
 final readonly class CreateCheckoutAction
 {
     public function execute(User $user, CheckoutData $data): Checkout
     {
-        /** @var SubscriptionBuilder $subscription */
         $subscription = $user->newSubscription('default', $data->plan);
 
         if ($data->allowPromotionCodes) {

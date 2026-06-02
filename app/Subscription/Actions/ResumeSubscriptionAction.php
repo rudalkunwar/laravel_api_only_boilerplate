@@ -13,7 +13,7 @@ final readonly class ResumeSubscriptionAction
     {
         $subscription = $user->subscription($type);
 
-        if ($subscription === null || !$subscription->onGracePeriod()) {
+        if (!$subscription instanceof Subscription || !$subscription->onGracePeriod()) {
             return null;
         }
 

@@ -6,7 +6,7 @@ namespace App\User\Actions;
 
 use App\User\Models\EmailOtp;
 use App\User\Models\User;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 final readonly class SendEmailOtpAction
 {
@@ -17,7 +17,7 @@ final readonly class SendEmailOtpAction
         return $user->emailOtps()->create([
             'email' => $email,
             'otp' => (string) random_int(100000, 999999),
-            'expires_at' => Carbon::now()->addMinutes(10),
+            'expires_at' => Date::now()->addMinutes(10),
         ]);
     }
 }

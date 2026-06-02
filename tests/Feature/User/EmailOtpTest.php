@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\User\Models\EmailOtp;
 use App\User\Models\User;
 use Laravel\Sanctum\Sanctum;
 
@@ -39,7 +40,7 @@ it('verifies otp and updates email', function (): void {
         'email' => 'verify@example.com',
     ]);
 
-    $otp = App\User\Models\EmailOtp::query()
+    $otp = EmailOtp::query()
         ->where('user_id', $this->user->id)
         ->first();
 

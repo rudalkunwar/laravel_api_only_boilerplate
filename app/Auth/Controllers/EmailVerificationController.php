@@ -26,9 +26,7 @@ final class EmailVerificationController extends Controller
     {
         $user = $this->users->findById($id);
 
-        if (!$user instanceof User || !hash_equals(sha1($user->getEmailForVerification()), $hash)) {
-            throw new HttpException(403, 'Invalid verification link.');
-        }
+        throw_if(!$user instanceof User || !hash_equals(sha1($user->getEmailForVerification()), $hash), HttpException::class, 403, 'Invalid verification link.');
 
         if ($user->hasVerifiedEmail()) {
             return ApiResponse::message('Email address already verified.');
@@ -48,9 +46,7 @@ final class EmailVerificationController extends Controller
     {
         $user = $request->user();
 
-        if (!$user instanceof User) {
-            throw new HttpException(401, 'Authentication required.');
-        }
+        throw_unless($user instanceof User, HttpException::class, 401, 'Authentication required.');
 
         if ($user->hasVerifiedEmail()) {
             return ApiResponse::message('Email address already verified.');
