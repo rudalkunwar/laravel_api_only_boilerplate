@@ -26,7 +26,7 @@ final readonly class RegisterUserAction
                 'password' => $data->password,
             ]);
 
-            $user->assignRole(Role::User->value);
+            $this->users->assignRole($user, Role::User->value);
 
             event(new Registered($user));
 

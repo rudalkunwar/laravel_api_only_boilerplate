@@ -11,6 +11,7 @@ use App\Auth\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Support\Http\ApiResponse;
 use App\User\Models\User;
+use App\User\Repositories\UserRepositoryInterface;
 use App\User\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,15 +21,18 @@ final class AuthenticatedSessionController extends Controller
     public function __construct(
         private readonly AuthenticateUserAction $authenticateUser,
         private readonly LogoutUserAction $logoutUser,
+        private readonly UserRepositoryInterface $users,
     ) {}
 
     public function store(LoginRequest $request): JsonResponse
     {
         $result = $this->authenticateUser->execute(LoginData::fromArray($request->validated()));
 
+        $user = $this->users->findById($result->userId);
+
         return ApiResponse::success(
             data: [
-                'user' => UserResource::make($result->user)->resolve(),
+                'user' => UserResource::make($user)->resolve(),
                 'token' => $result->token,
                 'token_type' => $result->tokenType,
             ],

@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 use App\Auth\Enums\Role;
 use App\User\Models\User;
-use Database\Seeders\RolePermissionSeeder;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function (): void {
-    $this->seed(RolePermissionSeeder::class);
-
     $this->admin = User::factory()->create();
     $this->admin->assignRole(Role::Admin);
 
@@ -31,7 +28,9 @@ it('lists paginated users for admin', function (): void {
     $this->getJson('/api/v1/admin/users')
         ->assertOk()
         ->assertJsonStructure([
-            'data' => ['data', 'meta', 'links'],
+            'data',
+            'meta',
+            'links',
         ]);
 });
 
@@ -85,6 +84,24 @@ it('updates a user via admin', function (): void {
         ->assertOk()
         ->assertJsonPath('data.name', 'Updated Name')
         ->assertJsonPath('data.roles', [Role::Admin->value]);
+});
+
+it('resets email verification when admin changes user email', function (): void {
+    Sanctum::actingAs($this->admin);
+
+    $user = User::factory()->create([
+        'name' => 'Verified User',
+        'email' => 'verified@example.com',
+        'email_verified_at' => now(),
+    ]);
+    $user->assignRole(Role::User);
+
+    $this->putJson('/api/v1/admin/users/'.$user->id, [
+        'email' => 'changed@example.com',
+    ])
+        ->assertOk()
+        ->assertJsonPath('data.email', 'changed@example.com')
+        ->assertJsonPath('data.is_verified', false);
 });
 
 it('deletes a user via admin (not self)', function (): void {

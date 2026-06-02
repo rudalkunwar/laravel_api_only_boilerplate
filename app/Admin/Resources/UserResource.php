@@ -20,8 +20,8 @@ final class UserResource extends JsonResource
             'is_verified' => $this->hasVerifiedEmail(),
             'roles' => $this->getRoleNames()->all(),
             'permissions' => $this->getAllPermissions()->pluck('name')->all(),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

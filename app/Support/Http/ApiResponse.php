@@ -28,7 +28,13 @@ final class ApiResponse
         int $status = 200,
         array $headers = [],
     ): JsonResponse {
-        $payload = ['data' => self::normalize($data)];
+        $normalized = self::normalize($data);
+
+        if (is_array($normalized) && isset($normalized['data'], $normalized['meta'])) {
+            $payload = $normalized;
+        } else {
+            $payload = ['data' => $normalized];
+        }
 
         if ($message !== null) {
             $payload['message'] = $message;

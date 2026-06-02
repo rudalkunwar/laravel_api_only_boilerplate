@@ -11,39 +11,29 @@ use App\Admin\Resources\UserResource;
 use App\Http\Controllers\Controller;
 use App\Support\Http\ApiResponse;
 use App\User\Models\User;
+use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 final class UserController extends Controller
 {
+    public function __construct(
+        private readonly UserRepositoryInterface $users,
+    ) {}
+
     public function index(UserIndexRequest $request): JsonResponse
     {
-        $query = User::query();
+        $criteria = $request->validated();
+        $perPage = (int) ($criteria['per_page'] ?? 15);
 
-        if ($search = $request->validated('search')) {
-            $query->where(function ($q) use ($search): void {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
-
-        if ($role = $request->validated('role')) {
-            $query->role($role);
-        }
-
-        $sort = $request->validated('sort', 'created_at');
-        $direction = $request->validated('direction', 'desc');
-        $query->orderBy($sort, $direction);
-
-        $perPage = (int) $request->validated('per_page', 15);
-        $users = $query->paginate($perPage);
+        $users = $this->users->paginateWithCriteria($criteria, $perPage);
 
         return ApiResponse::success(UserResource::collection($users));
     }
 
     public function show(int $id): JsonResponse
     {
-        $user = User::query()->find($id);
+        $user = $this->users->findById($id);
 
         if (!$user instanceof User) {
             throw new HttpException(404, 'User not found.');
@@ -54,14 +44,16 @@ final class UserController extends Controller
 
     public function store(UserStoreRequest $request): JsonResponse
     {
-        $user = User::query()->create([
-            'name' => $request->validated('name'),
-            'email' => $request->validated('email'),
-            'password' => $request->validated('password'),
+        $validated = $request->validated();
+
+        $user = $this->users->create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
         ]);
 
-        if ($role = $request->validated('role')) {
-            $user->assignRole($role);
+        if ($role = $validated['role'] ?? null) {
+            $this->users->assignRole($user, $role);
         }
 
         return ApiResponse::success(UserResource::make($user), 'User created.', 201);
@@ -69,13 +61,15 @@ final class UserController extends Controller
 
     public function update(int $id, UserUpdateRequest $request): JsonResponse
     {
-        $user = User::query()->find($id);
+        $user = $this->users->findById($id);
 
         if (!$user instanceof User) {
             throw new HttpException(404, 'User not found.');
         }
 
         $data = $request->validated();
+
+        $emailChanged = isset($data['email']) && $data['email'] !== $user->getOriginal('email');
 
         $fillable = array_filter([
             'name' => $data['name'] ?? null,
@@ -84,15 +78,15 @@ final class UserController extends Controller
         ], fn ($value): bool => $value !== null);
 
         if ($fillable !== []) {
-            $user->update($fillable);
+            $this->users->update($user, $fillable);
 
-            if (isset($data['email']) && $data['email'] !== $user->getOriginal('email')) {
-                $user->forceFill(['email_verified_at' => null])->save();
+            if ($emailChanged) {
+                $this->users->resetEmailVerification($user);
             }
         }
 
         if (isset($data['role'])) {
-            $user->syncRoles($data['role']);
+            $this->users->syncRoles($user, $data['role']);
         }
 
         return ApiResponse::success(UserResource::make($user->refresh()), 'User updated.');
@@ -104,13 +98,13 @@ final class UserController extends Controller
             throw new HttpException(422, 'Cannot delete your own account.');
         }
 
-        $user = User::query()->find($id);
+        $user = $this->users->findById($id);
 
         if (!$user instanceof User) {
             throw new HttpException(404, 'User not found.');
         }
 
-        $user->delete();
+        $this->users->delete($user);
 
         return ApiResponse::message('User deleted.');
     }

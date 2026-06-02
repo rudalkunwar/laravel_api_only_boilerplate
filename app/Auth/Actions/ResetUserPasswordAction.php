@@ -5,22 +5,29 @@ declare(strict_types=1);
 namespace App\Auth\Actions;
 
 use App\Auth\Data\ResetPasswordData;
-use App\User\Models\User;
+use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Contracts\Auth\CanResetPassword;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Hashing\HashManager;
 use Illuminate\Validation\ValidationException;
 
 final readonly class ResetUserPasswordAction
 {
+    public function __construct(
+        private PasswordBroker $broker,
+        private UserRepositoryInterface $users,
+        private HashManager $hash,
+        private Dispatcher $events,
+    ) {}
+
     /**
      * @throws ValidationException
      */
     public function execute(ResetPasswordData $data): string
     {
-        $status = Password::reset(
+        $status = $this->broker->reset(
             [
                 'email' => $data->email,
                 'password' => $data->password,
@@ -28,17 +35,14 @@ final readonly class ResetUserPasswordAction
                 'token' => $data->token,
             ],
             function (CanResetPassword $user, string $password): void {
-                /** @var User $user */
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+                /** @var \App\User\Models\User $user */
+                $this->users->resetPassword($user, $this->hash->make($password));
 
-                event(new PasswordReset($user));
+                $this->events->dispatch(new PasswordReset($user));
             },
         );
 
-        if ($status !== Password::PASSWORD_RESET) {
+        if ($status !== PasswordBroker::PASSWORD_RESET) {
             throw ValidationException::withMessages([
                 'email' => [__($status)],
             ]);

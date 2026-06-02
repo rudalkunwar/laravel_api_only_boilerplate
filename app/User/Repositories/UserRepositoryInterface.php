@@ -31,4 +31,16 @@ interface UserRepositoryInterface
      * @return LengthAwarePaginator<int, User>
      */
     public function paginate(int $perPage = 15): LengthAwarePaginator;
+
+    /**
+     * @param  array<string, mixed>  $criteria
+     * @return LengthAwarePaginator<int, User>
+     */
+    public function paginateWithCriteria(array $criteria = [], int $perPage = 15): LengthAwarePaginator;
+
+    public function assignRole(User $user, string|array $roles): User;
+
+    public function syncRoles(User $user, string|array $roles): User;
+
+    public function resetPassword(User $user, string $hashedPassword): User;
 }
