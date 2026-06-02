@@ -41,6 +41,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 ## Application Structure & Architecture
 
+- **Read `docs/PROJECT_MAP.md` first.** It is a compact map of the domain-folder layout, request flow, routes, and conventions — use it to jump to the right file instead of scanning the tree. Keep it up to date when structure changes.
 - Stick to existing directory structure; don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
 
