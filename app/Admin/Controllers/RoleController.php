@@ -7,6 +7,8 @@ namespace App\Admin\Controllers;
 use App\Admin\Repositories\RoleRepositoryInterface;
 use App\Admin\Requests\RoleStoreRequest;
 use App\Admin\Requests\RoleUpdateRequest;
+use App\Admin\Resources\RoleResource;
+use App\Auth\Enums\Role as RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Support\Data\Input;
 use App\Support\Http\ApiResponse;
@@ -22,16 +24,7 @@ final class RoleController extends Controller
 
     public function index(): JsonResponse
     {
-        $roles = $this->roles->all()->map(fn (Role $role): array => [
-            'id' => $role->id,
-            'name' => $role->name,
-            'guard_name' => $role->guard_name,
-            'permissions' => $role->permissions->pluck('name'),
-            'created_at' => $role->created_at,
-            'updated_at' => $role->updated_at,
-        ]);
-
-        return ApiResponse::success($roles);
+        return ApiResponse::success(RoleResource::collection($this->roles->all()));
     }
 
     public function store(RoleStoreRequest $request): JsonResponse
@@ -46,14 +39,7 @@ final class RoleController extends Controller
 
         $role->load('permissions');
 
-        return ApiResponse::success([
-            'id' => $role->id,
-            'name' => $role->name,
-            'guard_name' => $role->guard_name,
-            'permissions' => $role->permissions->pluck('name'),
-            'created_at' => $role->created_at,
-            'updated_at' => $role->updated_at,
-        ], 'Role created.', 201);
+        return ApiResponse::success(RoleResource::make($role), 'Role created.', 201);
     }
 
     public function update(int $id, RoleUpdateRequest $request): JsonResponse
@@ -74,14 +60,7 @@ final class RoleController extends Controller
 
         $role->load('permissions');
 
-        return ApiResponse::success([
-            'id' => $role->id,
-            'name' => $role->name,
-            'guard_name' => $role->guard_name,
-            'permissions' => $role->permissions->pluck('name'),
-            'created_at' => $role->created_at,
-            'updated_at' => $role->updated_at,
-        ], 'Role updated.');
+        return ApiResponse::success(RoleResource::make($role), 'Role updated.');
     }
 
     public function destroy(int $id): JsonResponse
@@ -90,7 +69,7 @@ final class RoleController extends Controller
 
         throw_unless($role instanceof Role, HttpException::class, 404, 'Role not found.');
 
-        throw_if($role->name === 'admin', HttpException::class, 422, 'Cannot delete the admin role.');
+        throw_if($role->name === RoleEnum::Admin->value, HttpException::class, 422, 'Cannot delete the admin role.');
 
         $this->roles->delete($role);
 

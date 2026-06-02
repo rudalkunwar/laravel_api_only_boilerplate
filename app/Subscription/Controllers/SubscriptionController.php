@@ -11,6 +11,7 @@ use App\Subscription\Actions\ResumeSubscriptionAction;
 use App\Subscription\Data\CheckoutData;
 use App\Subscription\Requests\CheckoutRequest;
 use App\Subscription\Resources\SubscriptionResource;
+use App\Subscription\SubscriptionType;
 use App\Support\Http\ApiResponse;
 use App\User\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -31,7 +32,7 @@ final class SubscriptionController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $subscription = $user->subscription('default');
+        $subscription = $user->subscription(SubscriptionType::DEFAULT);
 
         return ApiResponse::success(
             $subscription !== null ? SubscriptionResource::make($subscription) : null,

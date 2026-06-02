@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Subscription\Actions;
 
 use App\Subscription\Data\CheckoutData;
+use App\Subscription\SubscriptionType;
 use App\User\Models\User;
 use Illuminate\Support\Facades\Config;
 use Laravel\Cashier\Checkout;
@@ -13,7 +14,7 @@ final readonly class CreateCheckoutAction
 {
     public function execute(User $user, CheckoutData $data): Checkout
     {
-        $subscription = $user->newSubscription('default', $data->plan);
+        $subscription = $user->newSubscription(SubscriptionType::DEFAULT, $data->plan);
 
         if ($data->allowPromotionCodes) {
             $subscription->allowPromotionCodes();
