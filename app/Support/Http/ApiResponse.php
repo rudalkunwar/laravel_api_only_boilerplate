@@ -58,6 +58,10 @@ final class ApiResponse
 
     private static function normalize(mixed $data): mixed
     {
+        if ($data instanceof ResourceCollection && $data->resource instanceof AbstractPaginator) {
+            return $data->toResponse(request())->getData(true);
+        }
+
         if ($data instanceof JsonResource) {
             return $data->resolve();
         }
