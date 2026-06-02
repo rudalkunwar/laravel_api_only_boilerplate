@@ -27,22 +27,30 @@ final class DatabaseSeeder extends Seeder
 
     private function seedDemoUsers(): void
     {
-        User::factory()
-            ->create([
-                'name' => 'Admin User',
-                'email' => 'admin@example.com',
-            ])
-            ->assignRole(Role::Admin->value);
+        $this->createDemoUser('Admin User', 'admin@example.com', Role::Admin);
+        $this->createDemoUser('Test User', 'test@example.com', Role::User);
 
-        User::factory()
-            ->create([
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ])
-            ->assignRole(Role::User->value);
+        if (User::query()->count() >= 12) {
+            return;
+        }
 
         User::factory(10)
             ->create()
             ->each(static fn (User $user): mixed => $user->assignRole(Role::User->value));
+    }
+
+    /**
+     * Idempotently create a fixed demo account so re-running the seeder is safe.
+     */
+    private function createDemoUser(string $name, string $email, Role $role): void
+    {
+        $user = User::query()->firstOrCreate(
+            ['email' => $email],
+            ['name' => $name, 'email_verified_at' => now(), 'password' => 'password'],
+        );
+
+        if (!$user->hasRole($role->value)) {
+            $user->assignRole($role->value);
+        }
     }
 }

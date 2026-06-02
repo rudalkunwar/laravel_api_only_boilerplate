@@ -10,10 +10,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table): void {
-            $table->string('email')->nullable()->change();
-        });
-
         Schema::create('email_otps', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -28,9 +24,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('email_otps');
-
-        Schema::table('users', function (Blueprint $table): void {
-            $table->string('email')->nullable(false)->change();
-        });
     }
 };

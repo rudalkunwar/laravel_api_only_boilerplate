@@ -13,6 +13,14 @@ it('seeds demo accounts outside production', function (): void {
         ->and(Role::query()->where('name', 'admin')->exists())->toBeTrue();
 });
 
+it('is idempotent and can be re-run without errors', function (): void {
+    $this->seed(DatabaseSeeder::class);
+    $this->seed(DatabaseSeeder::class);
+
+    expect(User::query()->where('email', 'admin@example.com')->count())->toBe(1)
+        ->and(User::query()->where('email', 'test@example.com')->count())->toBe(1);
+});
+
 it('never seeds demo accounts in production', function (): void {
     app()['env'] = 'production';
 
