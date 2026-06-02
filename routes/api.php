@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
-use App\Http\Controllers\Api\V1\Auth\NewPasswordController;
-use App\Http\Controllers\Api\V1\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
-use App\Http\Controllers\Api\V1\UserController;
+use App\Auth\Controllers\AuthenticatedSessionController;
+use App\Auth\Controllers\EmailVerificationController;
+use App\Auth\Controllers\NewPasswordController;
+use App\Auth\Controllers\PasswordResetLinkController;
+use App\Auth\Controllers\RegisteredUserController;
+use App\User\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {

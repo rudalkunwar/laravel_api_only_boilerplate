@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Domain\Auth\Enums\Role;
-use App\Domain\User\Models\User;
+use App\Auth\Enums\Role;
+use App\User\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Domain\User\Repositories\EloquentUserRepository;
-use App\Domain\User\Repositories\UserRepositoryInterface;
+use App\User\Repositories\EloquentUserRepository;
+use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 final class RepositoryServiceProvider extends ServiceProvider

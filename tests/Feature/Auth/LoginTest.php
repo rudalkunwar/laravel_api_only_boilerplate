@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Domain\User\Models\User;
+use App\User\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 it('authenticates a user with valid credentials', function (): void {

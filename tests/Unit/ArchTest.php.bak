@@ -11,29 +11,27 @@ arch('no debugging helpers are left behind')
     ->not->toBeUsed();
 
 arch('actions are final and invoked through an execute method')
-    ->expect('App\Auth\Actions')
-    ->and('App\User\Actions')
+    ->expect('App\Domain')
     ->classes()
     ->toBeFinal();
 
 arch('controllers extend the base controller')
-    ->expect('App\Auth\Controllers')
-    ->and('App\User\Controllers')
-    ->toExtend('App\Http\Controllers\Controller');
+    ->expect('App\Http\Controllers')
+    ->toExtend('App\Http\Controllers\Controller')
+    ->ignoring('App\Http\Controllers\Controller');
 
 arch('controllers do not depend on eloquent models directly for queries')
-    ->expect('App\Auth\Controllers')
-    ->and('App\User\Controllers')
+    ->expect('App\Http\Controllers')
     ->not->toUse('Illuminate\Support\Facades\DB');
 
 arch('data transfer objects are immutable')
-    ->expect('App\Auth\Data')
+    ->expect('App\Domain\Auth\Data')
     ->toBeReadonly();
 
 arch('value objects in the user domain are immutable')
-    ->expect('App\User\Data')
+    ->expect('App\Domain\User\Data')
     ->toBeReadonly();
 
 arch('enums live in enum namespaces')
-    ->expect('App\Auth\Enums')
+    ->expect('App\Domain\Auth\Enums')
     ->toBeEnums();

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Domain\User\Models\User;
+use App\User\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 it('blocks guests from reading the profile', function (): void {
