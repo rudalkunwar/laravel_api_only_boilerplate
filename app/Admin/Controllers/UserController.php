@@ -9,6 +9,7 @@ use App\Admin\Requests\UserStoreRequest;
 use App\Admin\Requests\UserUpdateRequest;
 use App\Admin\Resources\UserResource;
 use App\Http\Controllers\Controller;
+use App\Support\Data\Input;
 use App\Support\Http\ApiResponse;
 use App\User\Models\User;
 use App\User\Repositories\UserRepositoryInterface;
@@ -24,7 +25,7 @@ final class UserController extends Controller
     public function index(UserIndexRequest $request): JsonResponse
     {
         $criteria = $request->validated();
-        $perPage = (int) ($criteria['per_page'] ?? 15);
+        $perPage = Input::integer($criteria, 'per_page', 15);
 
         $users = $this->users->paginateWithCriteria($criteria, $perPage);
 
@@ -47,12 +48,14 @@ final class UserController extends Controller
         $validated = $request->validated();
 
         $user = $this->users->create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
+            'name' => Input::string($validated, 'name'),
+            'email' => Input::string($validated, 'email'),
+            'password' => Input::string($validated, 'password'),
         ]);
 
-        if ($role = $validated['role'] ?? null) {
+        $role = Input::nullableString($validated, 'role');
+
+        if ($role !== null) {
             $this->users->assignRole($user, $role);
         }
 
@@ -85,8 +88,10 @@ final class UserController extends Controller
             }
         }
 
-        if (isset($data['role'])) {
-            $this->users->syncRoles($user, $data['role']);
+        $role = Input::nullableString($data, 'role');
+
+        if ($role !== null) {
+            $this->users->syncRoles($user, $role);
         }
 
         return ApiResponse::success(UserResource::make($user->refresh()), 'User updated.');

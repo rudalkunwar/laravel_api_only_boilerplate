@@ -37,6 +37,9 @@ enum Plan: string
         };
     }
 
+    /**
+     * @return list<string>
+     */
     public function features(): array
     {
         return match ($this) {

@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class ForceJsonResponse
 {
+    /**
+     * @param  Closure(Request): Response  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $request->headers->set('Accept', 'application/json');

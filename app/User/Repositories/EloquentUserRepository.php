@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\User\Repositories;
 
+use App\Support\Data\Input;
 use App\User\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 final class EloquentUserRepository implements UserRepositoryInterface
 {
@@ -51,23 +54,31 @@ final class EloquentUserRepository implements UserRepositoryInterface
         return $paginator;
     }
 
+    /**
+     * @param  array<string, mixed>  $criteria
+     * @return LengthAwarePaginator<int, User>
+     */
     public function paginateWithCriteria(array $criteria = [], int $perPage = 15): LengthAwarePaginator
     {
         $query = User::query();
 
-        if ($search = $criteria['search'] ?? null) {
-            $query->where(function ($q) use ($search): void {
+        $search = Input::nullableString($criteria, 'search');
+
+        if ($search !== null) {
+            $query->where(function (Builder $q) use ($search): void {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
-        if ($role = $criteria['role'] ?? null) {
+        $role = Input::nullableString($criteria, 'role');
+
+        if ($role !== null) {
             $query->role($role);
         }
 
-        $sort = $criteria['sort'] ?? 'created_at';
-        $direction = $criteria['direction'] ?? 'desc';
+        $sort = Input::string($criteria, 'sort', 'created_at');
+        $direction = Input::string($criteria, 'direction', 'desc') === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sort, $direction);
 
         /** @var LengthAwarePaginator<int, User> $paginator */
@@ -76,6 +87,9 @@ final class EloquentUserRepository implements UserRepositoryInterface
         return $paginator;
     }
 
+    /**
+     * @param  string|array<int, string>  $roles
+     */
     public function assignRole(User $user, string|array $roles): User
     {
         $user->assignRole($roles);
@@ -83,6 +97,9 @@ final class EloquentUserRepository implements UserRepositoryInterface
         return $user->refresh();
     }
 
+    /**
+     * @param  string|array<int, string>  $roles
+     */
     public function syncRoles(User $user, string|array $roles): User
     {
         $user->syncRoles($roles);
@@ -94,7 +111,7 @@ final class EloquentUserRepository implements UserRepositoryInterface
     {
         $user->forceFill([
             'password' => $hashedPassword,
-            'remember_token' => \Illuminate\Support\Str::random(60),
+            'remember_token' => Str::random(60),
         ])->save();
 
         return $user->refresh();

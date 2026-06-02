@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\User\Data;
 
+use App\Support\Data\Input;
+
 final readonly class UpdateProfileData
 {
     public function __construct(
@@ -17,8 +19,8 @@ final readonly class UpdateProfileData
     public static function fromArray(array $data): self
     {
         return new self(
-            name: (string) $data['name'],
-            email: (string) $data['email'],
+            name: Input::string($data, 'name'),
+            email: Input::string($data, 'email'),
         );
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Auth\Data;
 
+use App\Support\Data\Input;
+
 final readonly class AuthTokenData
 {
     public function __construct(
@@ -20,11 +22,11 @@ final readonly class AuthTokenData
     public static function fromArray(array $data): self
     {
         return new self(
-            userId: (int) $data['user_id'],
-            userName: (string) $data['user_name'],
-            userEmail: (string) $data['user_email'],
-            token: (string) $data['token'],
-            tokenType: (string) ($data['token_type'] ?? 'Bearer'),
+            userId: Input::integer($data, 'user_id'),
+            userName: Input::string($data, 'user_name'),
+            userEmail: Input::string($data, 'user_email'),
+            token: Input::string($data, 'token'),
+            tokenType: Input::string($data, 'token_type', 'Bearer'),
         );
     }
 }

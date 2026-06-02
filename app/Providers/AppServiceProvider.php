@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -60,9 +61,10 @@ final class AppServiceProvider extends ServiceProvider
     private function configureRateLimiting(): void
     {
         RateLimiter::for('api', static function (Request $request): Limit {
-            $identifier = $request->user()?->getAuthIdentifier() ?? $request->ip() ?? 'guest';
+            $identifier = $request->user()?->getAuthIdentifier();
+            $key = is_scalar($identifier) ? (string) $identifier : ($request->ip() ?? 'guest');
 
-            return Limit::perMinute(60)->by((string) $identifier);
+            return Limit::perMinute(60)->by($key);
         });
 
         RateLimiter::for('auth', static fn (Request $request): Limit => Limit::perMinute(5)->by((string) ($request->ip() ?? 'guest')));
@@ -75,9 +77,11 @@ final class AppServiceProvider extends ServiceProvider
 
     private function configureNotifications(): void
     {
-        ResetPassword::createUrlUsing(static function (CanResetPassword $notifiable, string $token): string {
-            $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
-            $email = urlencode($notifiable->getEmailForPasswordReset());
+        ResetPassword::createUrlUsing(static function (mixed $notifiable, string $token): string {
+            $frontendUrl = rtrim(Config::string('app.frontend_url'), '/');
+            $email = $notifiable instanceof CanResetPassword
+                ? urlencode($notifiable->getEmailForPasswordReset())
+                : '';
 
             return "{$frontendUrl}/reset-password?token={$token}&email={$email}";
         });

@@ -26,7 +26,7 @@ final class EmailOtpController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $this->sendEmailOtp->execute($user, $request->validated('email'));
+        $this->sendEmailOtp->execute($user, $request->string('email')->toString());
 
         return ApiResponse::message('OTP sent to your email.');
     }
@@ -38,8 +38,8 @@ final class EmailOtpController extends Controller
 
         $user = $this->verifyEmailOtp->execute(
             $user,
-            $request->validated('email'),
-            $request->validated('otp'),
+            $request->string('email')->toString(),
+            $request->string('otp')->toString(),
         );
 
         return ApiResponse::success(

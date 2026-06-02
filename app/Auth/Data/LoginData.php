@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Auth\Data;
 
+use App\Support\Data\Input;
+
 final readonly class LoginData
 {
     public function __construct(
@@ -17,12 +19,10 @@ final readonly class LoginData
      */
     public static function fromArray(array $data): self
     {
-        $deviceName = $data['device_name'] ?? null;
-
         return new self(
-            email: strtolower((string) $data['email']),
-            password: (string) $data['password'],
-            deviceName: is_string($deviceName) && $deviceName !== '' ? $deviceName : 'api',
+            email: strtolower(Input::string($data, 'email')),
+            password: Input::string($data, 'password'),
+            deviceName: Input::nullableString($data, 'device_name') ?? 'api',
         );
     }
 }

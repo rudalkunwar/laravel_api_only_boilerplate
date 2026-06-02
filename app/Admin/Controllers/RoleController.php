@@ -8,6 +8,7 @@ use App\Admin\Repositories\RoleRepositoryInterface;
 use App\Admin\Requests\RoleStoreRequest;
 use App\Admin\Requests\RoleUpdateRequest;
 use App\Http\Controllers\Controller;
+use App\Support\Data\Input;
 use App\Support\Http\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Spatie\Permission\Models\Role;
@@ -37,10 +38,10 @@ final class RoleController extends Controller
     {
         $validated = $request->validated();
 
-        $role = $this->roles->findOrCreate($validated['name'], 'sanctum');
+        $role = $this->roles->findOrCreate(Input::string($validated, 'name'), 'sanctum');
 
-        if (isset($validated['permissions'])) {
-            $this->roles->syncPermissions($role, $validated['permissions']);
+        if (array_key_exists('permissions', $validated)) {
+            $this->roles->syncPermissions($role, Input::stringList($validated, 'permissions'));
         }
 
         $role->load('permissions');
@@ -65,12 +66,12 @@ final class RoleController extends Controller
 
         $validated = $request->validated();
 
-        if (isset($validated['name'])) {
-            $this->roles->update($role, ['name' => $validated['name']]);
+        if (array_key_exists('name', $validated)) {
+            $this->roles->update($role, ['name' => Input::string($validated, 'name')]);
         }
 
-        if (isset($validated['permissions'])) {
-            $this->roles->syncPermissions($role, $validated['permissions']);
+        if (array_key_exists('permissions', $validated)) {
+            $this->roles->syncPermissions($role, Input::stringList($validated, 'permissions'));
         }
 
         $role->load('permissions');

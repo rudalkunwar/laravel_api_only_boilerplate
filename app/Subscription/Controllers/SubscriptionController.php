@@ -15,6 +15,7 @@ use App\Support\Http\ApiResponse;
 use App\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 final class SubscriptionController extends Controller
 {
@@ -46,9 +47,11 @@ final class SubscriptionController extends Controller
             CheckoutData::fromArray($request->validated()),
         );
 
+        $session = $checkout->asStripeCheckoutSession();
+
         return ApiResponse::success([
-            'url' => $checkout->url,
-            'id' => $checkout->id,
+            'url' => $session->url,
+            'id' => $session->id,
         ], 'Checkout session created.', 201);
     }
 
@@ -57,9 +60,11 @@ final class SubscriptionController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $url = $user->billingPortalUrl(
-            $request->input('return_url', config('app.url').'/dashboard'),
-        );
+        $returnUrl = $request->filled('return_url')
+            ? $request->string('return_url')->toString()
+            : Config::string('app.url').'/dashboard';
+
+        $url = $user->billingPortalUrl($returnUrl);
 
         return ApiResponse::success(['url' => $url], 'Billing portal URL retrieved.');
     }

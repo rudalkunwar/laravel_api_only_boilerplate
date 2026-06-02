@@ -22,7 +22,10 @@ final readonly class EloquentRoleRepository implements RoleRepositoryInterface
 
     public function findOrCreate(string $name, string $guardName = 'sanctum'): Role
     {
-        return Role::findOrCreate($name, $guardName);
+        return Role::query()->firstOrCreate([
+            'name' => $name,
+            'guard_name' => $guardName,
+        ]);
     }
 
     /** @param array<string, mixed> $attributes */
@@ -33,6 +36,9 @@ final readonly class EloquentRoleRepository implements RoleRepositoryInterface
         return $role->refresh();
     }
 
+    /**
+     * @param  array<int, string>  $permissions
+     */
     public function syncPermissions(Role $role, array $permissions): Role
     {
         $role->syncPermissions($permissions);

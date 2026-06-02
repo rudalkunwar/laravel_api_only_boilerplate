@@ -17,7 +17,7 @@ final readonly class UserData
     public function __construct(
         public int $id,
         public string $name,
-        public string $email,
+        public ?string $email,
         public bool $isVerified,
         public array $roles,
     ) {}
@@ -29,12 +29,12 @@ final readonly class UserData
             name: $user->name,
             email: $user->email,
             isVerified: $user->hasVerifiedEmail(),
-            roles: $user->getRoleNames()->all(),
+            roles: array_values(array_filter($user->getRoleNames()->all(), 'is_string')),
         );
     }
 
     /**
-     * @return array{id: int, name: string, email: string, is_verified: bool, roles: list<string>}
+     * @return array{id: int, name: string, email: string|null, is_verified: bool, roles: list<string>}
      */
     public function toArray(): array
     {

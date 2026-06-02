@@ -14,7 +14,7 @@ interface UserRepositoryInterface
     public function findByEmail(string $email): ?User;
 
     /**
-     * @param  array{name: string, email: string, password: string}  $attributes
+     * @param  array{name: string, email: string|null, password: string}  $attributes
      */
     public function create(array $attributes): User;
 
@@ -38,8 +38,14 @@ interface UserRepositoryInterface
      */
     public function paginateWithCriteria(array $criteria = [], int $perPage = 15): LengthAwarePaginator;
 
+    /**
+     * @param  string|array<int, string>  $roles
+     */
     public function assignRole(User $user, string|array $roles): User;
 
+    /**
+     * @param  string|array<int, string>  $roles
+     */
     public function syncRoles(User $user, string|array $roles): User;
 
     public function resetPassword(User $user, string $hashedPassword): User;

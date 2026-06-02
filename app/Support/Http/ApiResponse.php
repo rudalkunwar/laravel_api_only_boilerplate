@@ -72,7 +72,7 @@ final class ApiResponse
             return $data->resolve();
         }
 
-        if ($data instanceof AbstractPaginator || $data instanceof ResourceCollection) {
+        if ($data instanceof AbstractPaginator) {
             return $data;
         }
 

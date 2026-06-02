@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 final class SocialiteController extends Controller
@@ -27,7 +28,7 @@ final class SocialiteController extends Controller
     {
         $this->validateProvider($provider);
 
-        $redirectUrl = Socialite::driver($provider)->stateless()->redirect()->getTargetUrl();
+        $redirectUrl = $this->driver($provider)->stateless()->redirect()->getTargetUrl();
 
         return ApiResponse::success(data: ['redirect_url' => $redirectUrl]);
     }
@@ -37,7 +38,7 @@ final class SocialiteController extends Controller
         $this->validateProvider($provider);
 
         try {
-            $socialiteUser = Socialite::driver($provider)->stateless()->user();
+            $socialiteUser = $this->driver($provider)->stateless()->user();
         } catch (Exception) {
             throw new UnprocessableEntityHttpException('Unable to authenticate with '.$provider.'.');
         }
@@ -67,5 +68,19 @@ final class SocialiteController extends Controller
         if (!in_array($provider, self::SUPPORTED_PROVIDERS, true)) {
             throw new UnprocessableEntityHttpException('Provider ['.$provider.'] is not supported.');
         }
+    }
+
+    /**
+     * Resolve a stateless-capable OAuth provider driver.
+     */
+    private function driver(string $provider): AbstractProvider
+    {
+        $driver = Socialite::driver($provider);
+
+        if (!$driver instanceof AbstractProvider) {
+            throw new UnprocessableEntityHttpException('Provider ['.$provider.'] does not support stateless authentication.');
+        }
+
+        return $driver;
     }
 }

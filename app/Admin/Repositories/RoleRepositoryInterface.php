@@ -19,6 +19,9 @@ interface RoleRepositoryInterface
     /** @param array<string, mixed> $attributes */
     public function update(Role $role, array $attributes): Role;
 
+    /**
+     * @param  array<int, string>  $permissions
+     */
     public function syncPermissions(Role $role, array $permissions): Role;
 
     public function delete(Role $role): void;

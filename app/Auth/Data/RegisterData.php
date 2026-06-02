@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Auth\Data;
 
+use App\Support\Data\Input;
+
 final readonly class RegisterData
 {
     public function __construct(
@@ -18,9 +20,9 @@ final readonly class RegisterData
     public static function fromArray(array $data): self
     {
         return new self(
-            name: (string) $data['name'],
-            email: (string) $data['email'],
-            password: (string) $data['password'],
+            name: Input::string($data, 'name'),
+            email: Input::string($data, 'email'),
+            password: Input::string($data, 'password'),
         );
     }
 }

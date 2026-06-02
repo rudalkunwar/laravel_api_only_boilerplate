@@ -9,7 +9,7 @@ use Laravel\Cashier\Subscription;
 
 final readonly class CancelSubscriptionAction
 {
-    public function execute(User $user, ?string $type = 'default'): ?Subscription
+    public function execute(User $user, string $type = 'default'): ?Subscription
     {
         $subscription = $user->subscription($type);
 

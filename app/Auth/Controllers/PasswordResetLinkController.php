@@ -18,7 +18,7 @@ final class PasswordResetLinkController extends Controller
 
     public function store(ForgotPasswordRequest $request): JsonResponse
     {
-        $email = (string) $request->validated('email');
+        $email = $request->string('email')->toString();
 
         $this->sendPasswordResetLink->execute($email);
 

@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class LogRequest
 {
+    /**
+     * @param  Closure(Request): Response  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
         return $next($request);

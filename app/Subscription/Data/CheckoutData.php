@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Subscription\Data;
 
+use App\Support\Data\Input;
+
 final readonly class CheckoutData
 {
     public function __construct(
@@ -14,14 +16,17 @@ final readonly class CheckoutData
         public ?string $cancelUrl = null,
     ) {}
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
-            plan: (string) ($data['plan'] ?? ''),
-            coupon: isset($data['coupon']) ? (string) $data['coupon'] : null,
-            allowPromotionCodes: isset($data['allow_promotion_codes']) ? (bool) $data['allow_promotion_codes'] : true,
-            successUrl: isset($data['success_url']) ? (string) $data['success_url'] : null,
-            cancelUrl: isset($data['cancel_url']) ? (string) $data['cancel_url'] : null,
+            plan: Input::string($data, 'plan'),
+            coupon: Input::nullableString($data, 'coupon'),
+            allowPromotionCodes: Input::boolean($data, 'allow_promotion_codes', true),
+            successUrl: Input::nullableString($data, 'success_url'),
+            cancelUrl: Input::nullableString($data, 'cancel_url'),
         );
     }
 }

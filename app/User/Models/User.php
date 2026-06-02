@@ -59,6 +59,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
+    /** @return HasMany<SocialAccount, $this> */
     public function socialAccounts(): HasMany
     {
         return $this->hasMany(SocialAccount::class);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\OAuth\Data;
 
+use App\Support\Data\Input;
+
 final readonly class SocialUserData
 {
     public function __construct(
@@ -20,11 +22,11 @@ final readonly class SocialUserData
     public static function fromArray(array $data): self
     {
         return new self(
-            provider: (string) ($data['provider'] ?? ''),
-            providerId: (string) ($data['provider_id'] ?? ''),
-            name: (string) ($data['name'] ?? ''),
-            email: isset($data['email']) && $data['email'] !== '' ? (string) $data['email'] : null,
-            avatarUrl: isset($data['avatar_url']) ? (string) $data['avatar_url'] : null,
+            provider: Input::string($data, 'provider'),
+            providerId: Input::string($data, 'provider_id'),
+            name: Input::string($data, 'name'),
+            email: Input::nullableString($data, 'email'),
+            avatarUrl: Input::nullableString($data, 'avatar_url'),
         );
     }
 }

@@ -28,6 +28,9 @@ final class HealthController
         );
     }
 
+    /**
+     * @return array{healthy: bool, message: string}
+     */
     private function checkDatabase(): array
     {
         try {
@@ -39,6 +42,9 @@ final class HealthController
         }
     }
 
+    /**
+     * @return array{healthy: bool, message: string}
+     */
     private function checkCache(): array
     {
         try {

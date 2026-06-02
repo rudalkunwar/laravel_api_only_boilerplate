@@ -6,6 +6,7 @@ namespace App\Subscription\Actions;
 
 use App\Subscription\Data\CheckoutData;
 use App\User\Models\User;
+use Illuminate\Support\Facades\Config;
 use Laravel\Cashier\Checkout;
 use Laravel\Cashier\SubscriptionBuilder;
 
@@ -24,9 +25,11 @@ final readonly class CreateCheckoutAction
             $subscription->withCoupon($data->coupon);
         }
 
+        $appUrl = Config::string('app.url');
+
         return $subscription->checkout([
-            'success_url' => $data->successUrl ?? config('app.url').'/subscription/success',
-            'cancel_url' => $data->cancelUrl ?? config('app.url').'/subscription/cancel',
+            'success_url' => $data->successUrl ?? $appUrl.'/subscription/success',
+            'cancel_url' => $data->cancelUrl ?? $appUrl.'/subscription/cancel',
         ]);
     }
 }

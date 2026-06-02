@@ -35,7 +35,7 @@ final readonly class AuthenticateUserAction
         return new AuthTokenData(
             userId: $user->id,
             userName: $user->name,
-            userEmail: $user->email,
+            userEmail: (string) $user->email,
             token: $token,
         );
     }

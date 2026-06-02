@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Auth\Data;
 
+use App\Support\Data\Input;
+
 final readonly class ResetPasswordData
 {
     public function __construct(
@@ -18,9 +20,9 @@ final readonly class ResetPasswordData
     public static function fromArray(array $data): self
     {
         return new self(
-            email: (string) $data['email'],
-            token: (string) $data['token'],
-            password: (string) $data['password'],
+            email: Input::string($data, 'email'),
+            token: Input::string($data, 'token'),
+            password: Input::string($data, 'password'),
         );
     }
 }
