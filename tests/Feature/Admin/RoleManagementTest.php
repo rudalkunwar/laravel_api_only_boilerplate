@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Auth\Enums\Role;
+use App\Auth\Models\Permission;
 use App\User\Models\User;
 use Laravel\Sanctum\Sanctum;
-use Spatie\Permission\Models\Permission;
 
 beforeEach(function (): void {
     $admin = User::factory()->create();
@@ -37,7 +37,7 @@ it('creates a role with permissions', function (): void {
 });
 
 it('updates a role', function (): void {
-    $role = Spatie\Permission\Models\Role::findOrCreate('editor', 'sanctum');
+    $role = App\Auth\Models\Role::findOrCreate('editor', 'sanctum');
 
     $this->putJson('/api/v1/admin/roles/'.$role->id, [
         'name' => 'super-editor',
@@ -47,15 +47,25 @@ it('updates a role', function (): void {
 });
 
 it('prevents deleting the admin role', function (): void {
-    $role = Spatie\Permission\Models\Role::where('name', Role::Admin->value)->first();
+    $role = App\Auth\Models\Role::where('name', Role::Admin->value)->first();
 
     $this->deleteJson('/api/v1/admin/roles/'.$role->id)
         ->assertStatus(422)
         ->assertJsonPath('message', 'Cannot delete the admin role.');
 });
 
+it('prevents renaming the admin role', function (): void {
+    $role = App\Auth\Models\Role::where('name', Role::Admin->value)->first();
+
+    $this->putJson('/api/v1/admin/roles/'.$role->id, [
+        'name' => 'super-admin',
+    ])
+        ->assertUnprocessable()
+        ->assertJsonPath('message', 'Cannot rename the admin role.');
+});
+
 it('deletes a non-admin role', function (): void {
-    $role = Spatie\Permission\Models\Role::findOrCreate('temporary', 'sanctum');
+    $role = App\Auth\Models\Role::findOrCreate('temporary', 'sanctum');
 
     $this->deleteJson('/api/v1/admin/roles/'.$role->id)
         ->assertOk()

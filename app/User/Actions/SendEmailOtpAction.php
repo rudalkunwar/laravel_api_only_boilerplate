@@ -8,6 +8,7 @@ use App\User\Models\EmailOtp;
 use App\User\Models\User;
 use App\User\Notifications\EmailOtpNotification;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
 final readonly class SendEmailOtpAction
@@ -20,7 +21,7 @@ final readonly class SendEmailOtpAction
 
         $emailOtp = $user->emailOtps()->create([
             'email' => $email,
-            'otp' => $otp,
+            'otp_hash' => Hash::make($otp),
             'expires_at' => Date::now()->addMinutes(10),
         ]);
 

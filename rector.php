@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
 use Rector\Config\RectorConfig;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use RectorLaravel\Set\LaravelSetList;
 
 return RectorConfig::configure()
@@ -37,6 +36,5 @@ return RectorConfig::configure()
     ])
     ->withImportNames(removeUnusedImports: true)
     ->withSkip([
-        AddOverrideAttributeToOverriddenMethodsRector::class,
         InlineConstructorDefaultToPropertyRector::class,
     ]);

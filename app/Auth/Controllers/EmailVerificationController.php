@@ -22,7 +22,7 @@ final class EmailVerificationController extends Controller
     /**
      * Verify the user's email address from a signed URL.
      */
-    public function verify(int $id, string $hash): JsonResponse
+    public function verify(string $id, string $hash): JsonResponse
     {
         $user = $this->users->findById($id);
 

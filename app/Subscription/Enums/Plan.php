@@ -4,11 +4,26 @@ declare(strict_types=1);
 
 namespace App\Subscription\Enums;
 
+use Illuminate\Support\Facades\Config;
+use LogicException;
+use RuntimeException;
+
 enum Plan: string
 {
     case Free = 'free';
-    case Monthly = 'price_monthly';
-    case Yearly = 'price_yearly';
+    case Monthly = 'monthly';
+    case Yearly = 'yearly';
+
+    public function stripePriceId(): string
+    {
+        throw_if($this === self::Free, LogicException::class, 'The free plan has no Stripe price.');
+
+        $priceId = Config::string('services.stripe.prices.'.$this->value);
+
+        throw_if($priceId === '', RuntimeException::class, 'The Stripe price for the '.$this->value.' plan is not configured.');
+
+        return $priceId;
+    }
 
     public function label(): string
     {

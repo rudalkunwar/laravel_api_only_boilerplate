@@ -19,10 +19,14 @@ it('sends a password reset link', function (): void {
     Notification::assertSentTo($user, ResetPassword::class);
 });
 
-it('fails to send a reset link for an unknown email', function (): void {
+it('does not reveal whether a password reset email exists', function (): void {
+    Notification::fake();
+
     $this->postJson('/api/v1/forgot-password', ['email' => 'ghost@example.com'])
-        ->assertUnprocessable()
-        ->assertJsonValidationErrors(['email']);
+        ->assertOk()
+        ->assertJsonPath('message', 'Password reset link sent.');
+
+    Notification::assertNothingSent();
 });
 
 it('resets the password with a valid token', function (): void {

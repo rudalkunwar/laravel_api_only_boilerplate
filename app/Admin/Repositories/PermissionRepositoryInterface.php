@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Admin\Repositories;
 
+use App\Auth\Models\Permission;
 use Illuminate\Support\Collection;
-use Spatie\Permission\Models\Permission;
 
 interface PermissionRepositoryInterface
 {

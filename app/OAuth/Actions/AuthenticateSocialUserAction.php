@@ -12,6 +12,7 @@ use App\OAuth\Repositories\SocialAccountRepositoryInterface;
 use App\User\Models\User;
 use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 final readonly class AuthenticateSocialUserAction
 {
@@ -33,15 +34,19 @@ final readonly class AuthenticateSocialUserAction
         } else {
             $user = $data->email !== null ? $this->users->findByEmail($data->email) : null;
 
-            if (!$user instanceof User) {
-                $user = $this->users->create([
-                    'name' => $data->name,
-                    'email' => $data->email,
-                    'password' => Str::password(32),
-                ]);
+            throw_if(
+                $user instanceof User,
+                UnprocessableEntityHttpException::class,
+                'An account with this email already exists. Sign in to link a social account.',
+            );
 
-                $this->users->assignRole($user, Role::User->value);
-            }
+            $user = $this->users->create([
+                'name' => $data->name,
+                'email' => $data->email,
+                'password' => Str::password(32),
+            ]);
+
+            $this->users->assignRole($user, Role::User->value);
 
             $this->socialAccounts->create([
                 'user_id' => $user->id,
@@ -49,8 +54,6 @@ final readonly class AuthenticateSocialUserAction
                 'provider_id' => $data->providerId,
                 'avatar_url' => $data->avatarUrl,
             ]);
-
-            $this->users->markEmailAsVerified($user);
         }
 
         $token = $this->users->createToken($user, $data->provider);

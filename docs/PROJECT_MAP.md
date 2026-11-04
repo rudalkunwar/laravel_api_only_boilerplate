@@ -40,7 +40,7 @@ policy registration) lives in `app/Providers/AppServiceProvider.php`.
 | `User/` | Profile, email OTP, the `User` model + policy | `Models/User.php`, `Models/EmailOtp.php`, `Controllers/`, `Actions/` (UpdateUserProfile/SendEmailOtp/VerifyEmailOtp), `Repositories/UserRepository*`, `Policies/UserPolicy.php`, `Resources/UserResource.php` |
 | `Admin/` | Admin CRUD for users, roles, permissions (`role:admin` gated) | `Controllers/` (User/Role/Permission), `Repositories/` (Role/Permission), `Requests/`, `Resources/UserResource.php` |
 | `OAuth/` | Social login (Google/Apple) | `Controllers/SocialiteController.php`, `Actions/AuthenticateSocialUserAction.php`, `Models/SocialAccount.php`, `Repositories/SocialAccountRepository*`, `Data/` |
-| `Subscription/` | Stripe checkout, portal, cancel/resume, plans, webhook | `Controllers/` (Subscription/Plan/Webhook), `Actions/` (CreateCheckout/Cancel/Resume), `Enums/Plan.php`, `Data/CheckoutData.php`, `Resources/` |
+| `Subscription/` | Stripe checkout, portal, cancel/resume, plans, webhook | `Controllers/` (Subscription/Plan/Webhook), `Actions/` (CreateCheckout/Cancel/Resume), `Enums/Plan.php`, `Rules/FrontendUrl.php`, `Data/CheckoutData.php`, `Resources/` |
 | `Health/` | `GET /admin/health` DB + cache check | `HealthController.php` |
 | `Support/` | Shared, framework-agnostic helpers | `Http/ApiResponse.php` (response envelope), `Data/Input.php` (typed reads from `array<string,mixed>`) |
 | `Http/` | App-level middleware | `Middleware/ForceJsonResponse.php`, `Middleware/LogRequest.php` (activity log) |
@@ -81,6 +81,10 @@ personal access tokens, Spatie permission tables, activity log, Cashier
 customer/subscription/subscription-item columns, email OTPs, social accounts.
 Seeders: `DatabaseSeeder` → `RolePermissionSeeder` (seeds roles/permissions from
 `Auth\Enums\Role` + `Auth\Enums\Permission`).
+
+Email OTP values are stored as hashes and verified atomically. Stripe Checkout uses stable
+`monthly` / `yearly` plan slugs mapped to `STRIPE_PRICE_MONTHLY` /
+`STRIPE_PRICE_YEARLY`; redirect URLs must share the configured `FRONTEND_URL` origin.
 
 ## Tests (`tests/`)
 

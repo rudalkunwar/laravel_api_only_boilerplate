@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\User\Models\EmailOtp;
 use App\User\Models\User;
 use App\User\Notifications\EmailOtpNotification;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
 
@@ -33,11 +34,12 @@ it('emails the otp code to the target address', function (): void {
         'email' => 'new@example.com',
     ])->assertOk();
 
-    $otp = EmailOtp::query()->where('user_id', $this->user->id)->value('otp');
+    $emailOtp = EmailOtp::query()->where('user_id', $this->user->id)->firstOrFail();
 
     Notification::assertSentOnDemand(
         EmailOtpNotification::class,
-        fn (EmailOtpNotification $notification, array $channels, object $notifiable): bool => $notification->otp === $otp
+        fn (EmailOtpNotification $notification, array $channels, object $notifiable): bool => Hash::check($notification->otp, $emailOtp->otp_hash)
+            && $notification->otp !== $emailOtp->otp_hash
             && $notifiable->routes['mail'] === 'new@example.com',
     );
 });
@@ -57,13 +59,19 @@ it('verifies otp and updates email', function (): void {
         'email' => 'verify@example.com',
     ]);
 
-    $otp = EmailOtp::query()
-        ->where('user_id', $this->user->id)
-        ->first();
+    $otp = '';
+    Notification::assertSentOnDemand(
+        EmailOtpNotification::class,
+        function (EmailOtpNotification $notification) use (&$otp): bool {
+            $otp = $notification->otp;
+
+            return true;
+        },
+    );
 
     $response = $this->postJson('/api/v1/user/email/verify-otp', [
         'email' => 'verify@example.com',
-        'otp' => $otp->otp,
+        'otp' => $otp,
     ]);
 
     $response->assertOk()
@@ -72,6 +80,18 @@ it('verifies otp and updates email', function (): void {
     expect($this->user->fresh())
         ->email->toBe('verify@example.com')
         ->email_verified_at->not->toBeNull();
+});
+
+it('rate limits otp attempts', function (): void {
+    foreach (range(1, 5) as $attempt) {
+        $this->postJson('/api/v1/user/email/send-otp', [
+            'email' => "attempt{$attempt}@example.com",
+        ])->assertOk();
+    }
+
+    $this->postJson('/api/v1/user/email/send-otp', [
+        'email' => 'blocked@example.com',
+    ])->assertTooManyRequests();
 });
 
 it('rejects invalid otp', function (): void {

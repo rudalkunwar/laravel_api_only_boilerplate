@@ -7,6 +7,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+      - vendor_data:/app/vendor
       - ./docker/supervisor.conf:/etc/supervisor/conf.d/supervisor.conf
     environment:
       - APP_ENV=local
@@ -18,11 +19,8 @@ services:
       - DB_DATABASE=laravel
       - DB_USERNAME=laravel
       - DB_PASSWORD=secret
-      - REDIS_HOST=redis
     depends_on:
       pgsql:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     command: ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisor.conf"]
 
@@ -54,19 +52,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: laravel-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
 volumes:
   pgsql_data:
-  redis_data:
+  vendor_data:

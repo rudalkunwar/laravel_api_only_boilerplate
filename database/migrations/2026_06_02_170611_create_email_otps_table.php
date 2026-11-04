@@ -11,10 +11,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('email_otps', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
             $table->string('email');
-            $table->string('otp', 6);
+            $table->string('otp_hash');
             $table->timestamp('expires_at');
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();

@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\User\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int $id
- * @property int $user_id
+ * @property string $id
+ * @property string $user_id
  * @property string $email
- * @property string $otp
+ * @property string $otp_hash
  * @property Carbon $expires_at
  * @property Carbon|null $verified_at
  * @property Carbon|null $created_at
@@ -21,10 +22,12 @@ use Illuminate\Support\Carbon;
  */
 final class EmailOtp extends Model
 {
+    use HasUlids;
+
     protected $fillable = [
         'user_id',
         'email',
-        'otp',
+        'otp_hash',
         'expires_at',
         'verified_at',
     ];

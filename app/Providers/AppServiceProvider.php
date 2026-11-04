@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Auth\Models\PersonalAccessToken;
+use App\Subscription\Models\Subscription;
+use App\Subscription\Models\SubscriptionItem;
 use App\User\Models\User;
 use App\User\Policies\UserPolicy;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -17,6 +20,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Cashier\Cashier;
+use Laravel\Sanctum\Sanctum;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +32,9 @@ final class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+        Cashier::useSubscriptionModel(Subscription::class);
+        Cashier::useSubscriptionItemModel(SubscriptionItem::class);
         $this->configureModels();
         $this->configureResources();
         $this->configurePasswordValidation();
@@ -68,6 +76,13 @@ final class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('auth', static fn (Request $request): Limit => Limit::perMinute(5)->by((string) ($request->ip() ?? 'guest')));
+
+        RateLimiter::for('otp', static function (Request $request): Limit {
+            $identifier = $request->user()?->getAuthIdentifier();
+            $key = is_scalar($identifier) ? (string) $identifier : ($request->ip() ?? 'guest');
+
+            return Limit::perMinute(5)->by($key);
+        });
     }
 
     private function configurePolicies(): void

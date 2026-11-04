@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Admin\Resources;
 
+use App\Auth\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Spatie\Permission\Models\Permission;
 
 /** @mixin Permission */
 final class PermissionResource extends JsonResource

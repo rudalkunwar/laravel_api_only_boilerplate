@@ -8,11 +8,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 final class LoginRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /**
      * @return array<string, array<int, mixed>|string>
      */

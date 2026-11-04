@@ -9,11 +9,6 @@ use Illuminate\Validation\Rules\Password;
 
 final class UserStoreRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /**
      * @return array<string, mixed>
      */
