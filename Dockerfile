@@ -6,6 +6,7 @@ RUN apk add --no-cache \
     $PHPIZE_DEPS \
     postgresql-dev \
     libzip-dev \
+    brotli-dev \
     unzip \
     curl \
     supervisor \
