@@ -1,4 +1,4 @@
-FROM php:8.4-alpine AS base
+FROM php:8.4.27-alpine AS base
 
 ARG APP_ENV=production
 
