@@ -14,6 +14,7 @@ RUN apk add --no-cache \
   && docker-php-ext-install -j$(nproc) \
     pdo_pgsql \
     pdo_mysql \
+    bcmath \
     zip \
     opcache \
   && pecl install swoole \

@@ -85,5 +85,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build production image
-        run: docker build --target production --tag laravel-api-boilerplate:ci .
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: production
+          tags: laravel-api-boilerplate:ci
+          load: true
+          cache-from: type=gha,scope=laravel-api-production
+          cache-to: type=gha,scope=laravel-api-production,mode=max
