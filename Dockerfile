@@ -3,6 +3,7 @@ FROM php:8.4.27-alpine AS base
 ARG APP_ENV=production
 
 RUN apk add --no-cache \
+    $PHPIZE_DEPS \
     postgresql-dev \
     libzip-dev \
     unzip \
