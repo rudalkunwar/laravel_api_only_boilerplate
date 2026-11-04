@@ -6,6 +6,7 @@
 </p>
 
 <p align="center">
+    <img src="https://img.shields.io/badge/Release-v1.1.0-2ea44f?style=flat-square" alt="v1.1.0 release">
     <img src="https://img.shields.io/badge/PHP-8.4-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP 8.4">
     <img src="https://img.shields.io/badge/Laravel-13-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel 13">
     <img src="https://img.shields.io/badge/PHPStan-level%20max-2A2A72?style=flat-square" alt="PHPStan level max">
@@ -39,6 +40,7 @@ errors**, backed by a focused Pest test suite.
 
 **Engineering**
 - **PHP 8.4** with `declare(strict_types=1)` everywhere, `final` classes, constructor promotion
+- **ULID identifiers** for application and package-owned records, including users, roles, tokens, and subscriptions
 - **Actions + Repositories + DTOs** with a uniform `ApiResponse` JSON envelope
 - **PHPStan / Larastan** at level **max**, **Pint** for style, **Rector** for automated refactors
 - **Pest** test suite · **Octane**-ready · **Docker Compose** (Nginx + PHP + Postgres)
@@ -97,6 +99,10 @@ php artisan migrate --seed   # roles & permissions (+ demo users in non-prod)
 php artisan test
 ```
 
+The `v1.1.0` schema is a clean-install baseline and uses ULIDs for application identifiers. It is
+intended for new projects; it does not include an upgrade migration from earlier integer-ID schemas.
+For a fresh local setup, create the database before running migrations.
+
 Serve it: `php artisan serve` (or `php artisan octane:start`). API docs at `http://localhost:8000/docs/api`.
 
 **Default dev login** (seeded only outside production): `admin@example.com` / `password` (admin) and
@@ -123,7 +129,9 @@ going live — none of this is done for you:
 - **Fill the real secrets** in `.env`: `STRIPE_*` (including `STRIPE_PRICE_MONTHLY` and
   `STRIPE_PRICE_YEARLY`), `GOOGLE_*` / `APPLE_*`, and lock
   `CORS_ALLOWED_ORIGINS` (or `FRONTEND_URL`) to your real domain — never `*`.
-- **Deploy steps**: `php artisan migrate --force`, then `config:cache` + `route:cache`.
+- **Deploy steps**: use PHP 8.4.27 or a newer security-patched supported runtime, then run
+  `php artisan migrate --force`, followed by `config:cache` + `route:cache`. Rebuild and redeploy the
+  Docker image when updating the PHP runtime.
 
 Demo accounts are **never** seeded when `APP_ENV=production`; provision your first admin through a
 dedicated flow instead.
@@ -243,7 +251,7 @@ composer refactor      # apply Rector
 
 - **lint** — Laravel Pint on PHP 8.4
 - **quality** — dependency audit, Rector, PHPStan, and Pest
-- **docker** — production image build with production-only dependencies
+- **docker** — production image build with production-only dependencies and cached BuildKit layers
 
 ## 📄 License
 

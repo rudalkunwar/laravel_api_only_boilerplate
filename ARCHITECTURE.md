@@ -140,7 +140,7 @@ final readonly class CreateProductData
 ```php
 interface ProductRepositoryInterface
 {
-    public function findById(int $id): ?Product;
+    public function findById(string $id): ?Product;
     public function create(array $attributes): Product;
     public function update(Product $product, array $attributes): Product;
     public function delete(Product $product): void;
@@ -148,7 +148,7 @@ interface ProductRepositoryInterface
 
 final class EloquentProductRepository implements ProductRepositoryInterface
 {
-    public function findById(int $id): ?Product
+    public function findById(string $id): ?Product
     {
         return Product::query()->find($id);
     }
@@ -171,6 +171,13 @@ final class EloquentProductRepository implements ProductRepositoryInterface
     }
 }
 ```
+
+### Identifiers
+
+Application and package-owned records use ULIDs as primary keys. Define new model IDs with
+`$table->ulid('id')->primary()`, matching references with `foreignUlid()` or ULID morph columns,
+and add Laravel's `HasUlids` trait to the model. Treat IDs in route parameters, DTOs, and repository
+contracts as strings. Framework queue bookkeeping IDs may retain Laravel's defaults.
 
 ### Binding (Service Provider)
 ```php

@@ -79,6 +79,9 @@ Full endpoint list: `php artisan route:list --except-vendor`.
 Migrations cover: users (email **nullable** for OTP/social), cache, jobs,
 personal access tokens, Spatie permission tables, activity log, Cashier
 customer/subscription/subscription-item columns, email OTPs, social accounts.
+Application and package-owned records use ULID primary keys with matching ULID foreign and morph
+columns; Laravel queue bookkeeping keeps its framework defaults. This is a clean-install schema,
+not an integer-ID upgrade path.
 Seeders: `DatabaseSeeder` → `RolePermissionSeeder` (seeds roles/permissions from
 `Auth\Enums\Role` + `Auth\Enums\Permission`).
 
