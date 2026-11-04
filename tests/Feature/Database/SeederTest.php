@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Auth\Models\Role;
 use App\User\Models\User;
 use Database\Seeders\DatabaseSeeder;
-use Spatie\Permission\Models\Role;
 
 it('seeds demo accounts outside production', function (): void {
     $this->seed(DatabaseSeeder::class);

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\OAuth\Models;
 
 use App\User\Models\User;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int $id
- * @property int $user_id
+ * @property string $id
+ * @property string $user_id
  * @property string $provider
  * @property string $provider_id
  * @property string|null $avatar_url
@@ -22,6 +23,8 @@ use Illuminate\Support\Carbon;
  */
 final class SocialAccount extends Model
 {
+    use HasUlids;
+
     protected $fillable = [
         'user_id',
         'provider',

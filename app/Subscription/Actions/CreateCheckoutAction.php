@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Subscription\Actions;
 
 use App\Subscription\Data\CheckoutData;
+use App\Subscription\Enums\Plan;
 use App\Subscription\SubscriptionType;
 use App\User\Models\User;
 use Illuminate\Support\Facades\Config;
@@ -14,7 +15,10 @@ final readonly class CreateCheckoutAction
 {
     public function execute(User $user, CheckoutData $data): Checkout
     {
-        $subscription = $user->newSubscription(SubscriptionType::DEFAULT, $data->plan);
+        $subscription = $user->newSubscription(
+            SubscriptionType::DEFAULT,
+            Plan::from($data->plan)->stripePriceId(),
+        );
 
         if ($data->allowPromotionCodes) {
             $subscription->allowPromotionCodes();
@@ -24,11 +28,11 @@ final readonly class CreateCheckoutAction
             $subscription->withCoupon($data->coupon);
         }
 
-        $appUrl = Config::string('app.url');
+        $frontendUrl = rtrim(Config::string('app.frontend_url'), '/');
 
         return $subscription->checkout([
-            'success_url' => $data->successUrl ?? $appUrl.'/subscription/success',
-            'cancel_url' => $data->cancelUrl ?? $appUrl.'/subscription/cancel',
+            'success_url' => $data->successUrl ?? $frontendUrl.'/subscription/success',
+            'cancel_url' => $data->cancelUrl ?? $frontendUrl.'/subscription/cancel',
         ]);
     }
 }

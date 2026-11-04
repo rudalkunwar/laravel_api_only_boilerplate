@@ -49,4 +49,11 @@ return [
         'redirect' => env('APPLE_REDIRECT_URI'),
     ],
 
+    'stripe' => [
+        'prices' => [
+            'monthly' => env('STRIPE_PRICE_MONTHLY', ''),
+            'yearly' => env('STRIPE_PRICE_YEARLY', ''),
+        ],
+    ],
+
 ];

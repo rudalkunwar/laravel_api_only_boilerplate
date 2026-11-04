@@ -9,11 +9,11 @@ use App\Admin\Requests\RoleStoreRequest;
 use App\Admin\Requests\RoleUpdateRequest;
 use App\Admin\Resources\RoleResource;
 use App\Auth\Enums\Role as RoleEnum;
+use App\Auth\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Support\Data\Input;
 use App\Support\Http\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 final class RoleController extends Controller
@@ -42,7 +42,7 @@ final class RoleController extends Controller
         return ApiResponse::success(RoleResource::make($role), 'Role created.', 201);
     }
 
-    public function update(int $id, RoleUpdateRequest $request): JsonResponse
+    public function update(string $id, RoleUpdateRequest $request): JsonResponse
     {
         $role = $this->roles->findById($id);
 
@@ -51,7 +51,11 @@ final class RoleController extends Controller
         $validated = $request->validated();
 
         if (array_key_exists('name', $validated)) {
-            $this->roles->update($role, ['name' => Input::string($validated, 'name')]);
+            $name = Input::string($validated, 'name');
+
+            throw_if($role->name === RoleEnum::Admin->value && $name !== RoleEnum::Admin->value, HttpException::class, 422, 'Cannot rename the admin role.');
+
+            $this->roles->update($role, ['name' => $name]);
         }
 
         if (array_key_exists('permissions', $validated)) {
@@ -63,7 +67,7 @@ final class RoleController extends Controller
         return ApiResponse::success(RoleResource::make($role), 'Role updated.');
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
         $role = $this->roles->findById($id);
 

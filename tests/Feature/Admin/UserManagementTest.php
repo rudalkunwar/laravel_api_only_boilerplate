@@ -124,3 +124,13 @@ it('prevents admin from deleting their own account', function (): void {
         ->assertStatus(422)
         ->assertJsonPath('message', 'Cannot delete your own account.');
 });
+
+it('prevents admin from removing their own admin role', function (): void {
+    Sanctum::actingAs($this->admin);
+
+    $this->putJson('/api/v1/admin/users/'.$this->admin->id, [
+        'role' => Role::User->value,
+    ])
+        ->assertUnprocessable()
+        ->assertJsonPath('message', 'Cannot remove your own admin role.');
+});
