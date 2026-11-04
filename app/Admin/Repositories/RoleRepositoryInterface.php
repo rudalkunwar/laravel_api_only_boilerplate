@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Admin\Repositories;
 
+use App\Auth\Models\Role;
 use Illuminate\Support\Collection;
-use Spatie\Permission\Models\Role;
 
 interface RoleRepositoryInterface
 {
     /** @return Collection<int, Role> */
     public function all(): Collection;
 
-    public function findById(int $id): ?Role;
+    public function findById(string $id): ?Role;
 
     public function findOrCreate(string $name, string $guardName = 'sanctum'): Role;
 

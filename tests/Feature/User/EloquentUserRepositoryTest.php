@@ -7,6 +7,7 @@ use App\User\Repositories\EloquentUserRepository;
 use App\User\Repositories\UserRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 beforeEach(function (): void {
     $this->repository = resolve(UserRepositoryInterface::class);
@@ -25,6 +26,7 @@ it('creates a user and hashes the password', function (): void {
 
     $this->assertDatabaseHas('users', ['email' => 'ada@example.com']);
     expect(Hash::check('plain-password', $user->password))->toBeTrue();
+    expect(Str::isUlid($user->id))->toBeTrue();
 });
 
 it('finds users by id and email', function (): void {
@@ -32,7 +34,7 @@ it('finds users by id and email', function (): void {
 
     expect($this->repository->findById($user->id)?->id)->toBe($user->id)
         ->and($this->repository->findByEmail('find@example.com')?->id)->toBe($user->id)
-        ->and($this->repository->findById(999_999))->toBeNull()
+        ->and($this->repository->findById((string) Str::ulid()))->toBeNull()
         ->and($this->repository->findByEmail('missing@example.com'))->toBeNull();
 });
 

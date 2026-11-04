@@ -63,10 +63,10 @@ it('can authenticate via google callback', function (): void {
     ]);
 
     expect(User::query()->where('email', 'john@example.com')->first())
-        ->email_verified_at->not->toBeNull();
+        ->email_verified_at->toBeNull();
 });
 
-it('links existing user to new social account on callback', function (): void {
+it('does not implicitly link an existing account by email', function (): void {
     $user = User::factory()->create([
         'email' => 'existing@example.com',
         'name' => 'Existing User',
@@ -86,9 +86,10 @@ it('links existing user to new social account on callback', function (): void {
 
     $response = $this->getJson('/api/v1/auth/google/callback');
 
-    $response->assertOk();
+    $response->assertUnprocessable()
+        ->assertJsonPath('message', 'An account with this email already exists. Sign in to link a social account.');
 
-    $this->assertDatabaseHas('social_accounts', [
+    $this->assertDatabaseMissing('social_accounts', [
         'user_id' => $user->id,
         'provider' => 'google',
         'provider_id' => '67890',

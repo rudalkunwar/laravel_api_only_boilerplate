@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Admin\Repositories;
 
+use App\Auth\Models\Role;
 use Illuminate\Support\Collection;
-use Spatie\Permission\Models\Role;
 
 final readonly class EloquentRoleRepository implements RoleRepositoryInterface
 {
@@ -15,7 +15,7 @@ final readonly class EloquentRoleRepository implements RoleRepositoryInterface
         return Role::query()->with('permissions')->get();
     }
 
-    public function findById(int $id): ?Role
+    public function findById(string $id): ?Role
     {
         return Role::query()->find($id);
     }

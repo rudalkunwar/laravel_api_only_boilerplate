@@ -8,6 +8,7 @@ use App\Admin\Requests\UserIndexRequest;
 use App\Admin\Requests\UserStoreRequest;
 use App\Admin\Requests\UserUpdateRequest;
 use App\Admin\Resources\UserResource;
+use App\Auth\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Support\Data\Input;
 use App\Support\Http\ApiResponse;
@@ -32,7 +33,7 @@ final class UserController extends Controller
         return ApiResponse::success(UserResource::collection($users));
     }
 
-    public function show(int $id): JsonResponse
+    public function show(string $id): JsonResponse
     {
         $user = $this->users->findById($id);
 
@@ -60,13 +61,22 @@ final class UserController extends Controller
         return ApiResponse::success(UserResource::make($user), 'User created.', 201);
     }
 
-    public function update(int $id, UserUpdateRequest $request): JsonResponse
+    public function update(string $id, UserUpdateRequest $request): JsonResponse
     {
         $user = $this->users->findById($id);
 
         throw_unless($user instanceof User, HttpException::class, 404, 'User not found.');
 
         $data = $request->validated();
+        $role = Input::nullableString($data, 'role');
+        $authenticatedUser = $request->user();
+
+        throw_if(
+            $authenticatedUser instanceof User && $id === $authenticatedUser->id && $role !== null && $role !== Role::Admin->value,
+            HttpException::class,
+            422,
+            'Cannot remove your own admin role.',
+        );
 
         $emailChanged = isset($data['email']) && $data['email'] !== $user->getOriginal('email');
 
@@ -84,8 +94,6 @@ final class UserController extends Controller
             }
         }
 
-        $role = Input::nullableString($data, 'role');
-
         if ($role !== null) {
             $this->users->syncRoles($user, $role);
         }
@@ -93,9 +101,9 @@ final class UserController extends Controller
         return ApiResponse::success(UserResource::make($user->refresh()), 'User updated.');
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
-        throw_if($id === (int) auth()->id(), HttpException::class, 422, 'Cannot delete your own account.');
+        throw_if($id === auth()->id(), HttpException::class, 422, 'Cannot delete your own account.');
 
         $user = $this->users->findById($id);
 

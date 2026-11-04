@@ -20,7 +20,7 @@ final class EloquentUserRepository implements UserRepositoryInterface
      */
     private const array SORTABLE_COLUMNS = ['id', 'name', 'email', 'created_at'];
 
-    public function findById(int $id): ?User
+    public function findById(string $id): ?User
     {
         return User::query()->find($id);
     }

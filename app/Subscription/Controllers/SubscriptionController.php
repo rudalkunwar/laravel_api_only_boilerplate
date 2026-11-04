@@ -10,6 +10,7 @@ use App\Subscription\Actions\CreateCheckoutAction;
 use App\Subscription\Actions\ResumeSubscriptionAction;
 use App\Subscription\Data\CheckoutData;
 use App\Subscription\Requests\CheckoutRequest;
+use App\Subscription\Requests\PortalRequest;
 use App\Subscription\Resources\SubscriptionResource;
 use App\Subscription\SubscriptionType;
 use App\Support\Http\ApiResponse;
@@ -57,14 +58,14 @@ final class SubscriptionController extends Controller
         ], 'Checkout session created.', 201);
     }
 
-    public function portal(Request $request): JsonResponse
+    public function portal(PortalRequest $request): JsonResponse
     {
         /** @var User $user */
         $user = $request->user();
 
         $returnUrl = $request->filled('return_url')
             ? $request->string('return_url')->toString()
-            : Config::string('app.url').'/dashboard';
+            : rtrim(Config::string('app.frontend_url'), '/').'/dashboard';
 
         $url = $user->billingPortalUrl($returnUrl);
 

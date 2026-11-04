@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
 use Dedoc\Scramble\SecurityDocumentation\MiddlewareAuthSecurityStrategy;
-use Dedoc\Scramble\Support\Generator\SecurityScheme;
 
 return [
     /*
@@ -41,12 +40,12 @@ return [
         /*
          * API version.
          */
-        'version' => '1.0.0',
+        'version' => '1.1.0',
 
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => 'Enterprise-grade Laravel API boilerplate with full auth, RBAC, and admin management.',
+        'description' => 'Strictly typed Laravel API boilerplate with authentication, RBAC, subscriptions, and admin management.',
     ],
 
     'ui' => [
@@ -165,11 +164,5 @@ return [
      *     ],
      * ],
      */
-    'security_strategy' => [
-        MiddlewareAuthSecurityStrategy::class,
-        [
-            'middleware' => ['auth', 'auth:*', 'auth:sanctum'],
-            'scheme' => SecurityScheme::http('bearer'),
-        ],
-    ],
+    'security_strategy' => MiddlewareAuthSecurityStrategy::class,
 ];

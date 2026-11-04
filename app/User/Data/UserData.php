@@ -15,7 +15,7 @@ final readonly class UserData
      * @param  list<string>  $roles
      */
     public function __construct(
-        public int $id,
+        public string $id,
         public string $name,
         public ?string $email,
         public bool $isVerified,
@@ -34,7 +34,7 @@ final readonly class UserData
     }
 
     /**
-     * @return array{id: int, name: string, email: string|null, is_verified: bool, roles: list<string>}
+     * @return array{id: string, name: string, email: string|null, is_verified: bool, roles: list<string>}
      */
     public function toArray(): array
     {

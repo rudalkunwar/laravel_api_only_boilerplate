@@ -21,8 +21,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::put('user', [UserController::class, 'update'])->name('user.update');
 
         // Email OTP verification
-        Route::post('user/email/send-otp', [EmailOtpController::class, 'sendOtp'])->name('user.email.send-otp');
-        Route::post('user/email/verify-otp', [EmailOtpController::class, 'verifyOtp'])->name('user.email.verify-otp');
+        Route::post('user/email/send-otp', [EmailOtpController::class, 'sendOtp'])->middleware('throttle:otp')->name('user.email.send-otp');
+        Route::post('user/email/verify-otp', [EmailOtpController::class, 'verifyOtp'])->middleware('throttle:otp')->name('user.email.verify-otp');
 
         Route::get('subscriptions/current', [SubscriptionController::class, 'show'])->name('subscriptions.show');
         Route::post('subscriptions/checkout', [SubscriptionController::class, 'checkout'])->name('subscriptions.checkout');

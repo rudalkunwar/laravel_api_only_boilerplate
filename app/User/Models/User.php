@@ -8,6 +8,7 @@ use App\OAuth\Models\SocialAccount;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,7 +19,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string $name
  * @property string|null $email
  * @property Carbon|null $email_verified_at
@@ -37,6 +38,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     use HasFactory;
 
     use HasRoles;
+    use HasUlids;
     use Notifiable;
 
     /**
